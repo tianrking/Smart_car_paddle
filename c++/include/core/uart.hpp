@@ -15,13 +15,13 @@ class Driver {
 #define PKT_TAIL 0x10
 
   enum CmdType { SPEED_ANGLE = 0x01, SPEED_ANGLE_PWM = 0x0C, TEST = 0xBB };
-
+//1字节对齐
 #pragma pack(1)
   union Payload {
     uint8_t data[8];
     float speed_angle[2];
   };
-
+//小车上位机与下位机通讯的协议结构体
   struct Pkt {
     uint8_t head;
     uint8_t cmd;
@@ -48,7 +48,7 @@ public:
   ~Driver() { close(); };
   int open() {
     if (_debug_mode) {
-      /*debug 模式 : 在没有设备节点时 调试协议使用*/
+      /*debug 模式 : 在没有设备时 调试协议使用*/
       return 0;
     }
     _serial_port = std::make_shared<SerialPort>();
@@ -57,12 +57,12 @@ public:
       return -1;
     }
     try {
-      _serial_port->Open(_port_name);
-      _serial_port->SetBaudRate(_bps);
-      _serial_port->SetCharacterSize(CharacterSize::CHAR_SIZE_8);
-      _serial_port->SetFlowControl(FlowControl::FLOW_CONTROL_NONE);
-      _serial_port->SetParity(Parity::PARITY_NONE);
-      _serial_port->SetStopBits(StopBits::STOP_BITS_1);
+      _serial_port->Open(_port_name);//打开串口
+      _serial_port->SetBaudRate(_bps);//设置波特率
+      _serial_port->SetCharacterSize(CharacterSize::CHAR_SIZE_8);//8位数据位
+      _serial_port->SetFlowControl(FlowControl::FLOW_CONTROL_NONE);//设置流控
+      _serial_port->SetParity(Parity::PARITY_NONE);//无校验
+      _serial_port->SetStopBits(StopBits::STOP_BITS_1);//1个停止位
     } catch (const OpenFailed &) {
       std::cerr << "Serial port: " << _port_name << "open failed ..."
                 << std::endl;
@@ -82,7 +82,7 @@ public:
     check_speed_and_angle(speed, angle);
     _speed = speed;
     _angle = angle;
-    Payload data;
+    Payload data;     //send函数传参要是Payload
     data.speed_angle[0] = _speed;
     data.speed_angle[1] = _angle;
     return send(SPEED_ANGLE, data);
@@ -90,6 +90,7 @@ public:
 
   int move(float speed) { return move_steer(speed, _angle); }
   int steer(float angle) { return move_steer(_speed, angle); }
+  int recvdata(unsigned char &charBuffer, size_t msTimeout){return recv(charBuffer,msTimeout);}
 
   int stop() { return move_steer(0, _angle); };
 
@@ -106,7 +107,7 @@ public:
   int reverse(float speed) { return move_steer(-speed, _angle); };
   void close() {
     if (_debug_mode) {
-      /*debug 模式 : 在没有设备节点时 调试协议使用*/
+      /*debug 模式 : 在没有设备时 调试协议使用*/
       return;
     }
     if (_serial_port != nullptr) {
@@ -134,7 +135,8 @@ public:
   }
 
 private:
-  uint8_t check_sum(Pkt *pkt) {
+  uint8_t check_sum(Pkt *pkt) //校验和计算
+  {
     uint8_t check_sum = 0;
     check_sum += pkt->head;
     check_sum += pkt->cmd;
@@ -149,11 +151,13 @@ private:
     DataBuffer pkt_buf(sizeof(Pkt));
     Pkt *pkt = (Pkt *)&pkt_buf[0];
 
-    pkt->head = PKT_HEAD;
+    pkt->head = PKT_HEAD;//赋值
     pkt->cmd = (uint8_t)cmd;
+    //将联合体中的数据复制到要发送的数据结构体中
     memcpy(pkt->payload.data, payload.data, sizeof(payload.data));
     pkt->check_sum = check_sum(pkt);
     pkt->tail = PKT_TAIL;
+    //发送打印
     if (_log_en) {
       printf("[Driver Car] Send Serial Cmd:[");
       for (size_t i = 0; i < pkt_buf.size(); i++) {
@@ -162,11 +166,11 @@ private:
       printf("]\n");
     }
     if (_debug_mode) {
-      /*debug 模式 : 在没有设备节点时 调试协议使用*/
+      /*debug 模式 : 在没有设备时 调试协议使用*/
       return 0;
     }
     try {
-      _serial_port->Write(pkt_buf);
+      _serial_port->Write(pkt_buf);//写数据到串口
     } catch (const std::runtime_error &) {
       std::cerr << "The Write() runtime_error." << std::endl;
       return -1;
@@ -174,18 +178,18 @@ private:
       std::cerr << "Port Not Open ..." << std::endl;
       return -1;
     }
-    _serial_port->DrainWriteBuffer();
+    _serial_port->DrainWriteBuffer();//等待，直到写缓冲区耗尽，然后返回。
     return 0;
   }
-
+  //调试数据结构体
   void debugPkt(std::vector<uint8_t> pkt, std::string prefix) {
     printf("%s", prefix.c_str());
     for (size_t i = 0; i < pkt.size(); i++) {
       printf("%02X ", pkt[i]);
     }
     printf("\n");
-  }
-
+  } 
+  //检查返回的数据
   int checkValidPkt(std::vector<uint8_t> pkt_vector) {
     int head_index = -1;
     if (pkt_vector.size() < sizeof(Pkt)) {
@@ -270,6 +274,7 @@ private:
   int recv(unsigned char &charBuffer, size_t msTimeout = 0) {
     try {
       // Read a single byte of data from the serial ports.
+      //从串口读取一个数据
       _serial_port->ReadByte(charBuffer, msTimeout);
 
     } catch (const ReadTimeout &) {
@@ -337,5 +342,5 @@ private:
   float _angle;
 
   bool _debug_mode;
-  bool _log_en;
+  bool _log_en;//打印使能标志
 };

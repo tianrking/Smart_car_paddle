@@ -55,7 +55,7 @@ public:
     if (_serial_port == nullptr) {
       std::cerr << "Serial Create Failed ." << std::endl;
       return -1;
-    }
+    } 
     try {
       _serial_port->Open(_port_name);//打开串口
       _serial_port->SetBaudRate(_bps);//设置波特率

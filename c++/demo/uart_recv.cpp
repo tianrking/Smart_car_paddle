@@ -1,4 +1,4 @@
-#include "core/uart.hpp"
+#include "core/uart_test.hpp"
 #include <fstream>
 #include <iostream>
 #include <unistd.h>
@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     size_t timeout_ms = 5000;//超时为5000ms，1ms,10000次发送
     uint8_t recv_data;
     //预留串口的设备名为/dev/ttyPS1
-    driver = std::make_shared<Driver>("/dev/ttyPS1", BaudRate::BAUD_115200, false,true);
+    driver = std::make_shared<Driver>("/dev/ttyPS1", BaudRate::BAUD_115200);
     if (driver == nullptr) 
     {
     std::cout << "Create Driver Error ." << std::endl;
@@ -26,11 +26,10 @@ int main(int argc, char *argv[])
 
     while (1)
     {
-        
         ret = driver->recvdata(recv_data, timeout_ms);
         if(ret == 0)
         {
-            printf("接收的数据为%x\r\n",recv_data);
+            printf("The received data is %x\r\n",recv_data);
         }
     }
     return 0;

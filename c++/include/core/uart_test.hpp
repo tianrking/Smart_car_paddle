@@ -45,7 +45,8 @@ private:
     {
         try {
         // Read a single byte of data from the serial ports.
-        //从串口读取一个数据
+        /*从串口读取一个数据,指定msTimeout时长内,没有收到数据，抛出异常。
+        如果msTimeout为0，则该方法将阻塞，直到数据可用为止。*/
         _serial_port->ReadByte(charBuffer, msTimeout);
 
         } catch (const ReadTimeout &) {
@@ -121,6 +122,7 @@ public:
     void close() 
     {
         if (_serial_port != nullptr) {
+        /*关闭串口。串口的所有设置将会丢失，并且不能在串口上执行更多的I/O操作。*/
         _serial_port->Close();
         _serial_port = nullptr;
         }

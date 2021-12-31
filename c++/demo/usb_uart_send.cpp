@@ -1,19 +1,13 @@
-#include "core/stock.hpp"
-#include <cmath>
-#include <exception>
+#include "core/uart_test.hpp"
 #include <fstream>
 #include <iostream>
-#include <opencv2/highgui.hpp>
-#include <opencv2/opencv.hpp>
-#include <signal.h>
-#include "core/detection.hpp"
-
 #include <unistd.h>
 
 std::shared_ptr<Driver> driver = nullptr;
-int main()
-{
-    driver = std::make_shared<Driver>("/dev/ttyUSB0", BaudRate::BAUD_115200, false,true);
+
+int main(int argc, char *argv[]) 
+{   //预留串口的设备名为/dev/ttyPS1
+    driver = std::make_shared<Driver>("/dev/ttyUSB0", BaudRate::BAUD_115200);
     if (driver == nullptr) 
     {
     std::cout << "Create Driver Error ." << std::endl;
@@ -28,10 +22,11 @@ int main()
 
     while (1)
     {
-        driver->move(0.2);
+        driver->senddata(0xFF);
         sleep(1);//linux下，sleep里的单位s，延时1s发一次
     }
     return 0;
     
+
 
 }

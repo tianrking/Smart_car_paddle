@@ -10,13 +10,14 @@ int main(int argc, char *argv[])
     int ret = 0;
     size_t timeout_ms = 5000;//超时为5000ms，1ms,10000次发送
     uint8_t recv_data;
-    //预留串口的设备名为/dev/ttyUSB0
+    //USB转串口的设备名为/dev/ttyUSB0
     driver = std::make_shared<Driver>("/dev/ttyUSB0", BaudRate::BAUD_115200);
     if (driver == nullptr) 
     {
     std::cout << "Create Driver Error ." << std::endl;
     return -1;
     }
+    //串口初始化，打开串口设备及配置串口数据格式
     ret = driver->open();
     if (ret != 0)
     {
@@ -26,6 +27,7 @@ int main(int argc, char *argv[])
 
     while (1)
     {
+        //循环阻塞接收数据并打印
         ret = driver->recvdata(recv_data, timeout_ms);
         if(ret == 0)
         {

@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
     std::cout << "Create Driver Error ." << std::endl;
     return -1;
     }
+    //串口初始化，打开串口设备及配置串口数据格式
     int ret = driver->open();
     if (ret != 0)
     {
@@ -22,6 +23,7 @@ int main(int argc, char *argv[])
 
     while (1)
     {
+        //循环延时1s发送
         driver->senddata(0xFF);
         sleep(1);//linux下，sleep里的单位s，延时1s发一次
     }

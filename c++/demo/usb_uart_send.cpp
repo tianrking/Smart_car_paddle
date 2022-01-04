@@ -6,7 +6,7 @@
 std::shared_ptr<Driver> driver = nullptr;
 
 int main(int argc, char *argv[]) 
-{   //预留串口的设备名为/dev/ttyPS1
+{   //预留串口的设备名为/dev/ttyUSB0
     driver = std::make_shared<Driver>("/dev/ttyUSB0", BaudRate::BAUD_115200);
     if (driver == nullptr) 
     {

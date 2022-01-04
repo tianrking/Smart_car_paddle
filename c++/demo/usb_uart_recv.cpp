@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     int ret = 0;
     size_t timeout_ms = 5000;//超时为5000ms，1ms,10000次发送
     uint8_t recv_data;
-    //预留串口的设备名为/dev/ttyPS1
+    //预留串口的设备名为/dev/ttyUSB0
     driver = std::make_shared<Driver>("/dev/ttyUSB0", BaudRate::BAUD_115200);
     if (driver == nullptr) 
     {

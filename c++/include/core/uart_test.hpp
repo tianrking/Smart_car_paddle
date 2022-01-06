@@ -5,24 +5,10 @@
 
 using namespace LibSerial;
 
-    #define PKT_HEAD 0x42   
-    #define PKT_CMD  0x01   
-    #define PKT_TAIL 0x10
 
-    //1字节对齐
-    #pragma pack(1)
-    //上位机与下位机通讯的协议结构体
-    struct Pkt {
-        uint8_t head;   //帧头
-        uint8_t cmd;    //命令帧
-        uint8_t data;   //数据帧
-        uint16_t check_sum; //校验和=head+cmd+data
-        uint8_t tail;   //帧尾
-    };
-    #pragma pack()
+
 class Driver
 {
-
 
 private:
     std::shared_ptr<SerialPort> _serial_port = nullptr;
@@ -30,14 +16,7 @@ private:
     BaudRate _bps;//波特率
 
 private:
-    uint16_t check_sum(Pkt *pkt) //校验和计算
-    {
-        uint16_t check_sum = 0;
-        check_sum += (uint16_t)pkt->head;
-        check_sum += (uint16_t)pkt->cmd;
-        check_sum += (uint16_t)pkt->data;
-        return check_sum;
-    }
+
     int recv(unsigned char &charBuffer, size_t msTimeout = 0) 
     {
         /*try检测语句块有没有异常。如果没有发生异常,就检测不到。
@@ -59,29 +38,27 @@ private:
         }
         return 0;
     };
-    //读取固定长度的数据包。
-    int recvpacket(DataBuffer& dataBuffer,size_t numberOfBytes = 0,size_t msTimeout = 0)
+
+    int send(unsigned char charbuffer)
     {
-        //检测可能出现异常的代码块
-        try{
-            /*从串口读取指定的字节数。dataBuffer:存放数据的数据缓冲区。
-            numberOfBytes:在返回之前读取的字节数。msTimeout:超时时间*/
-            _serial_port->Read(dataBuffer,numberOfBytes,msTimeout);
-        }
-        catch (const ReadTimeout &)//catch捕获并处理 try 检测到的异常。
-        {
-            std::cerr << "The ReadByte() call has timed out." << std::endl;
-            return -2;
+
+        //try检测语句块有没有异常
+        try {
+        _serial_port->WriteByte(charbuffer);//写数据到串口
         } 
-        catch (const NotOpen &) //catch()中指明了当前 catch 可以处理的异常类型
+        catch (const std::runtime_error &) //catch捕获并处理 try 检测到的异常。
         {
-            std::cerr << "Port Not Open ..." << std::endl;
-            return -1;
+        std::cerr << "The Write() runtime_error." << std::endl;
+        return -2;
+        } 
+        catch (const NotOpen &) //catch捕获并处理 try 检测到的异常。
+        {
+        std::cerr << "Port Not Open ..." << std::endl;
+        return -1;
         }
+        _serial_port->DrainWriteBuffer();//等待，直到写缓冲区耗尽，然后返回。
         return 0;
     }
-
-
 
 
 public:
@@ -127,36 +104,9 @@ public:
         return 0;
     };
 
-    int senddata(uint8_t data)
-    {
-        DataBuffer pkt_buf(sizeof(Pkt));
-        Pkt *pkt = (Pkt *)&pkt_buf[0];
-        
-        pkt->head = PKT_HEAD;//赋值
-        pkt->cmd = PKT_CMD;
-        pkt->data = (uint16_t)data;
-        pkt->check_sum = check_sum(pkt);
-        pkt->tail = PKT_TAIL;
-        //try检测语句块有没有异常
-        try {
-        _serial_port->Write(pkt_buf);//写数据到串口
-        } 
-        catch (const std::runtime_error &) //catch捕获并处理 try 检测到的异常。
-        {
-        std::cerr << "The Write() runtime_error." << std::endl;
-        return -1;
-        } 
-        catch (const NotOpen &) //catch捕获并处理 try 检测到的异常。
-        {
-        std::cerr << "Port Not Open ..." << std::endl;
-        return -1;
-        }
-        _serial_port->DrainWriteBuffer();//等待，直到写缓冲区耗尽，然后返回。
-        return 0;
-    }
 
+    int senddata(unsigned char charbuffer){return send(charbuffer);}
     int recvdata(unsigned char &charBuffer, size_t msTimeout){return recv(charBuffer,msTimeout);}
-    int recvpacketdata(DataBuffer& dataBuffer,size_t numberOfBytes,size_t msTimeout){return recvpacket(dataBuffer,numberOfBytes,msTimeout);}
 
         
     void close() 

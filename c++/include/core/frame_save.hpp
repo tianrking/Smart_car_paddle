@@ -4,6 +4,7 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/opencv.hpp>
 #include "core/capture.hpp"
+// 保存灰度图片的接口类，方便调试
 class ImageSaver {
   public:
     std::string save_path_;
@@ -41,7 +42,8 @@ class ImageSaver {
             }
         });
     }
-
+    // 外部调用接口，在需要保存图片的地方调用这个接口即可。
+    // 图片保存功能实现在一个单独的线程中
     void PutFrame(Mat frame) {
         {
                 std::unique_lock<std::mutex> lock(_mutex);

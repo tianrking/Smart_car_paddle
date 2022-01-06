@@ -12,7 +12,7 @@ struct PredictResult {
   int width;
   int height;
 };
-
+// 调用AI模型的接口类
 class Predictor {
 private:
   std::string _config_path;
@@ -22,7 +22,7 @@ private:
 public:
   Predictor(std::string config_path) : _config_path(config_path){};
   ~Predictor(){};
-
+  // 初始化模型
   int init() {
     _model_config = std::make_shared<ModelConfig>(_config_path);
     if (_model_config == nullptr) {
@@ -56,7 +56,7 @@ public:
     std::cout << "Predictor Init Success !!!" << std::endl;
     return 0;
   };
-
+  // 运行模型输出预测结果
   std::vector<PredictResult> run(cv::Mat &inputFrame) {
     std::vector<PredictResult> predict_ret;
 
@@ -106,7 +106,7 @@ public:
     }
     return predict_ret;
   };
-
+  // 针对检测结果，进行画框操作
   void render(cv::Mat &inputFrame, std::vector<PredictResult> &results) {
     for (int i = 0; i < results.size(); ++i) {
       PredictResult r = results[i];
@@ -132,6 +132,7 @@ public:
       }
     }
   }
+  // 检测结果格式化输出
   void printer(cv::Mat &inputFrame, std::vector<PredictResult> results) {
 
     for (int i = 0; i < results.size(); ++i) {
@@ -144,6 +145,7 @@ public:
                 << std::endl;
     }
   }
+  // 根据type的id，返回具体label
   std::string getLabel(int type) {
     if ((type < 0) || (type > _model_config->labels.size())) {
       std::cout << "Error: Predictor Label [" << type << "] is error."
@@ -155,6 +157,7 @@ public:
   };
 
 private:
+  // 将输出框约束在图像尺寸之内
   void _boundaryCorrection(PredictResult &r, int width_range,
                            int height_range) {
 #define MARGIN_PIXELS (2)

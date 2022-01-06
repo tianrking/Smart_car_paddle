@@ -16,13 +16,13 @@ struct DetectionResult {
   cv::Mat rgb_frame;
   std::vector<PredictResult> predictor_results;
 };
-
+// 对检测模型的封装类，通过一个单独线程完成从摄像头读图，到模型推理
 class Detection {
 
 public:
   Detection(bool logEn = false) : _log_en(logEn) {}
   ~Detection() {}
-
+  // 初始化
   int init(std::string file_path, std::string model_config_path) {
     _is_file = true;
     _file_path = file_path;
@@ -100,7 +100,7 @@ public:
   }
   int stop() { return 0; }
   int deinit() { return 0; }
-
+  // 外部获取推理结果的接口函数
   std::shared_ptr<DetectionResult> getLastFrame() {
     std::shared_ptr<DetectionResult> ret = nullptr;
     {

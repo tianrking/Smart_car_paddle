@@ -16,7 +16,7 @@ typedef paddle::lite::utils::cv::FlipParam FlipParam;
 typedef paddle::lite::utils::cv::TransParam TransParam;
 typedef paddle::lite::utils::cv::ImageFormat ImageFormat;
 typedef paddle::lite::utils::cv::ImagePreprocess ImagePreprocess;
-
+// AI 模型图像预处理函数
 inline void fpga_preprocess(cv::Mat img, std::shared_ptr<ModelConfig> &config,
                             std::unique_ptr<Tensor> &tensor) {
 
@@ -77,54 +77,6 @@ class TraditionalPreprocessor {
 
     return imageBinary;
   }
-
-  Mat LaneEdgeDetection(Mat &imageBinary) {
-
-    Mat imageEdge = Mat::zeros(imageBinary.size(), CV_8UC3);
-
-    vector<vector<Point>> points;	//赛道轮廓搜索
-    vector<Point> pointsEdge;		//赛道边沿点
-    findContours(imageBinary, points, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
-
-    //绘制轮廓
-
-    for (uint16_t i = 0; i < points.size(); i++)//遍历
-    {
-        //计算面积和周长
-        //double length = arcLength(points[i], true);
-        double area = contourArea(points[i]);
-
-        vector<vector<Point>> pointsPoly(points.size());		//多边形点集
-        approxPolyDP(points[i], pointsPoly[i], 4, true);		//多边形逼近
-
-        if(pointsPoly[i].size() > 8 && area >120000) 			//多边形边大于6绘制边界 && 白块面积区域>MinNum
-        {
-            // Head on Lane
-            if(imageBinary.at<uchar>(320, 400) == 255)
-                drawContours(imageEdge, points, i, Scalar(0, 255, 0), 2);
-            else
-                drawContours(imageEdge, points, i, Scalar(0, 0, 255), 2);
-            for (size_t n = 0; n < points[i].size(); n++)
-            {
-                pointsEdge.push_back(points[i].at(n));		//存储有效边缘点
-            }
-        }
-    }
-
-    //赛道左右边缘提取
-    //vector<Point> point = find_if(pointsEdge.begin(),pointsEdge.end(), [&](Point p) { return p.y == p.x;} );
-    //cout << "contoursEdge size:" << contoursEdge.size() << endl;
-    if(imageBinary.at<uchar>(320, 400) == 255)
-        floodFill(imageEdge, cv::Point(320,400), Scalar(0, 0, 255));
-    else
-        floodFill(imageEdge, cv::Point(320,400), Scalar(255, 0, 0));
-    // floodFill(imageEdge, cv::Point(320,400), Scalar(0, 0, 255));
-
-    //imshow("imageEdge", imageEdge);
-
-    return imageEdge;
-  }
-
 
 };
 

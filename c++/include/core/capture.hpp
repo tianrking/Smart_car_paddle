@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <opencv2/opencv.hpp>
-
+// 相机功能的封装类
 class Capture {
 private:
   std::shared_ptr<cv::VideoCapture> _capture;
@@ -10,6 +10,7 @@ private:
   bool _isOpend = false;
 
 public:
+  // 打开相机
   int open(int dev_index) {
     _capture = std::make_shared<cv::VideoCapture>(dev_index);
     return _open();
@@ -18,8 +19,9 @@ public:
     _capture = std::make_shared<cv::VideoCapture>(path);
     return _open();
   };
-
+  // 相机状态查询
   bool is_open() { return _isOpend; }
+  // 读相机结果
   cv::Mat read() {
     cv::Mat frame;
     if (is_open()) {
@@ -27,6 +29,7 @@ public:
     }
     return frame;
   };
+  // 关闭相机
   void close() {
     _isOpend = false;
     _capture->release();

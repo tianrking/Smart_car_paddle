@@ -2,6 +2,7 @@
 
 将SmartCarToolKits工程放到/root/workspace/下
 
+
 串口或者网口进入Edgeboard中linux系统。
 
 ## SmartCarToolKits/c++

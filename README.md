@@ -21,7 +21,7 @@
 
 准备要转换的图片文件夹放到`/root/workspace/`路径下，以命名为`train`为例（可任意命名）。
 
-#### 获取程序：
+#### 编译方法：
 
 ```sh
 cd /root/workspace/SmartCarToolKits/c++
@@ -57,7 +57,7 @@ make camera2video -j
 
 #### 功能介绍：
 
-测试`VNC`。
+实时显示，外接显示器直接显示或者通过vnc显示
 
 #### 准备工作：
 
@@ -65,9 +65,10 @@ make camera2video -j
 
 将摄像头插入`EdgeBoard`上的`USB`口中。
 
-打开电脑，下载`VNC Viewer`（具体详见`VNC`使用手册）。
+连接好显示器，或者通过vnc显示（具体详见`VNC`使用手册）
 
-#### 获取程序：
+
+#### 编译方法：
 
 ```sh
 cd /root/workspace/SmartCarToolKits/c++
@@ -89,7 +90,7 @@ make camera_display -j
 
 #### 产生效果：
 
-可以在`VNC`中，看到一个名为`usbcamera`的摄像头框。
+可以在`VNC`或者显示器中，看到一个名为`usbcamera`的视频框。
 
 
 
@@ -109,7 +110,7 @@ make camera_display -j
 
 假设`train`中的图片以0.jpg，1.jpg，2.jpg ...等格式递增。
 
-#### 获取程序：
+#### 编译方法：
 
 ```sh
 cd /root/workspace/SmartCarToolKits/c++
@@ -147,7 +148,7 @@ cd /root/workspace/SmartCarToolKits/python/
 
 #### 功能介绍：
 
-测试摄像头驱动
+通过摄像头抓取图片并保存到执行目录下
 
 #### 准备工作：
 
@@ -203,4 +204,4 @@ python3  collect.py
 
 会在当前文件夹生成一个`train`文件夹。
 
-`train`文件夹中包含，执行`python3  collect.py`后采集的图片。
+`train`文件夹中包含，执行`python3  collect.py`后采集的图片序列，以及一个json文件

@@ -4,12 +4,22 @@
 #include <unistd.h>
 
 std::shared_ptr<Driver> driver = nullptr;
+using namespace LibSerial;
+
 
 int main(int argc, char *argv[]) 
 {  
     int ret = 0;
-    size_t timeout_ms = 5000;//超时为5000ms，1ms,10000次发送
+
+    #if 0   //与下文接收一个字节的数据并打印相关
+    size_t timeout_ms = 5000;//阻塞时间5000ms。
     uint8_t recv_data;
+    #endif
+
+    DataBuffer dataBuffer(sizeof(Pkt));
+    size_t numberOfBytes = 6;   //接收数据的固定长度
+    size_t msTimeout = 5000;    //阻塞时间5000ms
+
     //预留串口的设备名为/dev/ttyPS1
     driver = std::make_shared<Driver>("/dev/ttyPS1", BaudRate::BAUD_115200);
     if (driver == nullptr) 
@@ -27,12 +37,24 @@ int main(int argc, char *argv[])
 
     while (1)
     {
-        //循环阻塞接收数据并打印
+        #if 0
+        //循环阻塞接收一字节数据并打印
         ret = driver->recvdata(recv_data, timeout_ms);
         if(ret == 0)
         {
             printf("The received data is %x\r\n",recv_data);
         }
+        #endif
+
+        //循环阻塞接收固定长度的数据并打印
+        ret = driver->recvpacketdata(dataBuffer,numberOfBytes,msTimeout);
+        if(ret == 0)
+        { 
+            Pkt *pkt = (Pkt *)&dataBuffer[0];
+            printf("接受到的数据为 %x,%x,%x,%x,%x\r\n",pkt->head,pkt->cmd,pkt->data,pkt->check_sum,pkt->tail);
+        }
+
+
     }
     return 0;
     

@@ -1,16 +1,10 @@
 #include "util/stop_watch.hpp"
 #include <iostream>
 #include <libserial/SerialPort.h>
-#include <memory>
-#include <stdint.h>
-#include <stdio.h>
 #include <string.h>
-#include <thread>
 
 using namespace LibSerial;
 
-class Driver
-{
     #define PKT_HEAD 0x42   
     #define PKT_CMD  0x01   
     #define PKT_TAIL 0x10
@@ -26,6 +20,9 @@ class Driver
         uint8_t tail;   //帧尾
     };
     #pragma pack()
+class Driver
+{
+
 
 private:
     std::shared_ptr<SerialPort> _serial_port = nullptr;
@@ -62,6 +59,31 @@ private:
         }
         return 0;
     };
+    //读取固定长度的数据包。
+    int recvpacket(DataBuffer& dataBuffer,size_t numberOfBytes = 0,size_t msTimeout = 0)
+    {
+        //检测可能出现异常的代码块
+        try{
+            /*从串口读取指定的字节数。dataBuffer:存放数据的数据缓冲区。
+            numberOfBytes:在返回之前读取的字节数。msTimeout:超时时间*/
+            _serial_port->Read(dataBuffer,numberOfBytes,msTimeout);
+        }
+        catch (const ReadTimeout &)//catch捕获并处理 try 检测到的异常。
+        {
+            std::cerr << "The ReadByte() call has timed out." << std::endl;
+            return -2;
+        } 
+        catch (const NotOpen &) //catch()中指明了当前 catch 可以处理的异常类型
+        {
+            std::cerr << "Port Not Open ..." << std::endl;
+            return -1;
+        }
+        return 0;
+    }
+
+
+
+
 public:
     //定义构造函数
     Driver(const std::string &port_name, BaudRate bps): _port_name(port_name), _bps(bps){};
@@ -110,7 +132,7 @@ public:
         DataBuffer pkt_buf(sizeof(Pkt));
         Pkt *pkt = (Pkt *)&pkt_buf[0];
         
-        pkt->head = PKT_HEAD;
+        pkt->head = PKT_HEAD;//赋值
         pkt->cmd = PKT_CMD;
         pkt->data = (uint16_t)data;
         pkt->check_sum = check_sum(pkt);
@@ -134,6 +156,7 @@ public:
     }
 
     int recvdata(unsigned char &charBuffer, size_t msTimeout){return recv(charBuffer,msTimeout);}
+    int recvpacketdata(DataBuffer& dataBuffer,size_t numberOfBytes,size_t msTimeout){return recvpacket(dataBuffer,numberOfBytes,msTimeout);}
 
         
     void close() 

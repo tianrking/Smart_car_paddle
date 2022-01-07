@@ -16,7 +16,8 @@ typedef paddle::lite::utils::cv::FlipParam FlipParam;
 typedef paddle::lite::utils::cv::TransParam TransParam;
 typedef paddle::lite::utils::cv::ImageFormat ImageFormat;
 typedef paddle::lite::utils::cv::ImagePreprocess ImagePreprocess;
-// AI 模型图像预处理函数
+// AI 模型图像预处理函数，这个函数有predictor类接口进行调用
+// 用户不必直接使用它
 inline void fpga_preprocess(cv::Mat img, std::shared_ptr<ModelConfig> &config,
                             std::unique_ptr<Tensor> &tensor) {
 
@@ -58,7 +59,7 @@ inline void fpga_preprocess(cv::Mat img, std::shared_ptr<ModelConfig> &config,
                                    config->means, config->scales);
   free(src);
 }
-
+// 传统图像预处理的模块
 class TraditionalPreprocessor {
   public:
   TraditionalPreprocessor() {}  

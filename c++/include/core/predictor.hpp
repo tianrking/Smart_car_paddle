@@ -12,7 +12,8 @@ struct PredictResult {
   int width;
   int height;
 };
-// 调用AI模型的接口类
+// 调用AI模型的接口类,调用模型的底层接口
+// Predictor类均为基础API，不建议对内容进行修改
 class Predictor {
 private:
   std::string _config_path;
@@ -20,6 +21,7 @@ private:
   std::shared_ptr<PaddlePredictor> _predictor;
 
 public:
+  // 传入的是模型目录，具体目录的配置方式，详见ReadMe文档
   Predictor(std::string config_path) : _config_path(config_path){};
   ~Predictor(){};
   // 初始化模型

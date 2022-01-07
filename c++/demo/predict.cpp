@@ -1,8 +1,7 @@
-
 #include "core/detection.hpp"
 #include "util/json.hpp"
 #include <iostream>
-
+// 设置opencv显示窗口
 std::string rgb_window_name = "RGB";
 std::string gray_window_name = "Gray";
 int display_window_init() {
@@ -16,7 +15,7 @@ int display_window_init() {
 }
 
 int main(int argc, char const *argv[]) {
-
+  // 命令行传入模型目录
   std::string model_path;
   if (argc < 2) {
     std::cout << "Please Input ./palator_car  model_path. " << std::endl;
@@ -25,6 +24,8 @@ int main(int argc, char const *argv[]) {
     model_path = argv[1];   
     std::cout << "Model Path :" << model_path << std::endl;
   }
+  // 实例化检测器，并初始化
+  // 对于这种非单例方式的Detection启动，需要三步：1. 初始化类；2.init；3.start线程
   std::shared_ptr<Detection> detection = std::make_shared<Detection>(true);
   if (detection == nullptr) {
     std::cout << "Error : create detection failed." << std::endl;
@@ -36,6 +37,8 @@ int main(int argc, char const *argv[]) {
     return -1;
   }
   detection->start();
+  // 单例模式启动只要一个API调用即可
+  // std::shared_ptr<Detection> detection = Detection::DetectionInstance(0, model_path);
 	
 	display_window_init();
 

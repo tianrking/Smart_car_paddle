@@ -22,7 +22,7 @@ class Detection {
 public:
   Detection(bool logEn = false) : _log_en(logEn) {}
   ~Detection() {}
-  // 初始化
+  // 初始化, 传入相机结点和模型路径
   int init(std::string file_path, std::string model_config_path) {
     _is_file = true;
     _file_path = file_path;
@@ -118,22 +118,29 @@ public:
   std::string getLabel(int type) { return _predictor->getLabel(type); }
 
 public:
-  static std::shared_ptr<Detection> DetectionInstance(std::string file_path) {
+  // 单例模式，避免被复制，用户可自行选择是否使用单例
+  // 用户可以用此API调用模型推理，传入的是模型目录，具体目录的配置方式，详见ReadMe文档
+  static std::shared_ptr<Detection> DetectionInstance(std::string file_path, std::string model_path) {
     static std::shared_ptr<Detection> detectioner = nullptr;
     if (detectioner == nullptr) {
       detectioner = std::make_shared<Detection>();
-      std::string model_path = "../../res/model/mobilenet-ssd/";
+
       int ret = detectioner->init(file_path, model_path);
       if (ret != 0) {
         std::cout << "Detection init error :" << model_path << std::endl;
         exit(-1);
       }
+      // Detection类实例化过程中, 启动预测器，完成模型加载并开始异步推理
+      // 用户通过调用getLastFrame获取最新一帧的推理结果
+      // 如果用户可以设计一个轻巧的模型，使得一帧推理的时间小于相机取图周期，那么异步的方式可以有效的避免神经网络处理带来的延迟
+      // 进而方便提升小车速度
       detectioner->start();
     }
     return detectioner;
   }
 
-
+  // 同上一个API, 默认模型路径是"../../res/model/mobilenet-ssd/"
+  // 不建议使用这个API
   static std::shared_ptr<Detection> DetectionInstance() {
     static std::shared_ptr<Detection> detectioner = nullptr;
     if (detectioner == nullptr) {

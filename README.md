@@ -7,6 +7,162 @@
 
 ## SmartCarToolKits/c++
 
+### 串口通信
+
+`EdgeBoard`支持两种串口通信：`USB`转`UART`和`UART`，下面分别描述两种使用方法。
+
+#### USB转UART
+
+##### 依赖的源文件
+
+`usb_uart_send.cpp`
+
+`usb_uart_recv.cpp`
+
+##### 功能介绍
+
+主要有`usb_uart_send`、`usb_uart_recv`应用程序
+
+`usb_uart_send`：`EdgeBoard`通过`usb`转串口，循环1s发送`00-09`的数据
+
+`usb_uart_recv`：`EdgeBoard`通过`usb`转串口，超时接收一个字节的数据
+
+##### 准备工作
+
+1. 软件：将`SmartCarToolKits`工程放到板子上的`/root/workspace/`文件夹下。
+2. 硬件：三根杜邦线：`TX`，`RX`，`GND`、2个`USB`转串口工具、`PC`电脑上安装串口调试助手。
+![USB转UART连接方式](./image/0.png)
+
+
+
+串口协议规定为下图交叉相连方式。
+
+![USB转串口原理图](./image/1.png)
+
+注意：有的`USB`转串口的`TX`与`RX`标识是转换后的，不需要交叉。
+
+##### 编译方式
+
+```sh
+cd /root/workspace/SmartCarToolKits/c++
+mkdir build
+cd build
+cmake .. 
+make usb_uart_send -j
+make usb_uart_recv -j
+```
+
+会在`build`目录下产生`usb_uart_send`、`usb_uart_recv`两个可执行文件
+
+##### 使用方式
+
+1. 按照准备工作中的连接示意图连接，`PC`安装相应适配的`USB`转串口驱动。
+2. 打开`PC`上的串口调试助手，选择串口号，并在串口调试助手中设置:波特率为115200，8位数据位，无校验位。
+
+![串口调试助手](./image/2.png)
+
+3. 发送实验：`EdgeBoard`发送，`PC`机接收
+
+   `EdgeBoard`:执行`./usb_uart_send`程序
+
+   `PC`串口调试助手：查看接收结果：接收区出现，`EdgeBoard`发过来的数据，十六进制显示为`00-09`。
+
+   ![接收区](./image/3.png)
+
+4. 接收实验：`EdgeBoard`接收，`PC`机发送
+
+   `PC`串口调试助手：发送十六进制数据。以`0x56`为例
+
+   `EdgeBoard`:执行`./usb_uart_recv`程序。
+
+![USB——linux接收](./image/4.png)
+
+##### 问题排查方法
+
+`EdgeBoard` 目前支持的`USB`转串口的 控制器芯片：  `CH341` 和 `CP210x`
+
+1. 查看硬件是否连接良好。
+
+2.  `lsusb` 查看是否有新设备 :证明 `USB`设备已经被识别了。
+
+![lsusb](./image/5.png)
+
+3. 执行 `lsmod` 命令，查看驱动是否被加载：
+
+![lsmod](./image/6.png)
+
+4. 查看`USB`转串口的设备节点：`ls` `/dev/tty.USB*`  
+
+![查看设备文件节点](./image/7.png)
+
+
+
+
+
+#### UART
+
+##### 依赖的源文件
+
+`uart_send.cpp`
+
+`uart_recv.cpp`
+
+##### 功能介绍
+
+主要有`uart_send`、`uart_recv`应用程序
+
+`uart_send`：`EdgeBoard`通过串口，循环1s发送`00-09`的数据
+
+`uart_recv`：`EdgeBoard`通过串口，超时接收接收一个字节的数据
+
+##### 准备工作
+
+1. 软件：软件：将`SmartCarToolKits`工程放到板子上的`/root/workspace/`文件夹下。
+
+2. 硬件：三根杜邦线，`TX`，`RX`，`GND`、1个`USB`转串口工具、`PC`电脑上安装串口调试助手
+
+
+
+`EdgeBoard`串口方形的为`TX`，圆形为`RX`
+
+![TXRX](./image/8.jpg)
+
+
+
+![串口通讯连接方式](./image/9.jpg)
+
+
+
+![串口通讯连接原理](./image/10.png)
+
+注意：有的`USB`转串口的`TX`与`RX`标识是转换后的，不需要交叉。
+
+
+
+##### 编译方式
+
+```sh
+cd /root/workspace/SmartCarToolKits/c++
+mkdir build
+cd build
+cmake .. 
+make uart_send -j
+make uart_recv -j
+```
+
+会在`build`目录下产生`uart_send`、`uart_recv`的可执行文件
+
+##### 使用方式
+
+同`USB`转`UART`章节
+
+##### 问题排查的方法
+
+1. 查看硬件是否连接良好。
+
+2. 串口`TX`、`RX`是否反接
+
+3. 查看设备节点是否存在：`ls /dev/ttyPS1`
 ### camera2video
 
 #### 依赖的源文件
@@ -312,159 +468,3 @@ python3  collect.py
 
 
 
-# 串口通信
-
-`EdgeBoard`支持两种串口通信：`USB`转`UART`和`UART`，下面分别描述两种使用方法。
-
-## USB转UART
-
-### 依赖的源文件
-
-`usb_uart_send.cpp`
-
-`usb_uart_recv.cpp`
-
-### 功能介绍
-
-主要有`usb_uart_send`、`usb_uart_recv`应用程序
-
-`usb_uart_send`：`EdgeBoard`通过`usb`转串口，循环1s发送`00-09`的数据
-
-`usb_uart_recv`：`EdgeBoard`通过`usb`转串口，超时接收一个字节的数据
-
-### 准备工作
-
-1. 软件：将`SmartCarToolKits`工程放到板子上的`/root/workspace/`文件夹下。
-2. 硬件：三根杜邦线：`TX`，`RX`，`GND`、2个`USB`转串口工具、`PC`电脑上安装串口调试助手。
-![USB转UART连接方式](../image/0.png)
-
-
-
-串口协议规定为下图交叉相连方式。
-
-![USB转串口原理图](./image/1.png)
-
-注意：有的`USB`转串口的`TX`与`RX`标识是转换后的，不需要交叉。
-
-### 编译方式
-
-```sh
-cd /root/workspace/SmartCarToolKits/c++
-mkdir build
-cd build
-cmake .. 
-make usb_uart_send -j
-make usb_uart_recv -j
-```
-
-会在`build`目录下产生`usb_uart_send`、`usb_uart_recv`两个可执行文件
-
-### 使用方式
-
-1. 按照准备工作中的连接示意图连接，`PC`安装相应适配的`USB`转串口驱动。
-2. 打开`PC`上的串口调试助手，选择串口号，并在串口调试助手中设置:波特率为115200，8位数据位，无校验位。
-
-![串口调试助手](./image/2.png)
-
-3. 发送实验：`EdgeBoard`发送，`PC`机接收
-
-   `EdgeBoard`:执行`./usb_uart_send`程序
-
-   `PC`串口调试助手：查看接收结果：接收区出现，`EdgeBoard`发过来的数据，十六进制显示为`00-09`。
-
-   ![接收区](./image/3.png)
-
-4. 接收实验：`EdgeBoard`接收，`PC`机发送
-
-   `PC`串口调试助手：发送十六进制数据。以`0x56`为例
-
-   `EdgeBoard`:执行`./usb_uart_recv`程序。
-
-![USB——linux接收](./image/4.png)
-
-### 问题排查方法
-
-`EdgeBoard` 目前支持的`USB`转串口的 控制器芯片：  `CH341` 和 `CP210x`
-
-1. 查看硬件是否连接良好。
-
-2.  `lsusb` 查看是否有新设备 :证明 `USB`设备已经被识别了。
-
-![lsusb](./image/5.png)
-
-3. 执行 `lsmod` 命令，查看驱动是否被加载：
-
-![lsmod](./image/6.png)
-
-4. 查看`USB`转串口的设备节点：`ls` `/dev/tty.USB*`  
-
-![查看设备文件节点](./image/7.png)
-
-
-
-
-
-## UART
-
-### 依赖的源文件
-
-`uart_send.cpp`
-
-`uart_recv.cpp`
-
-### 功能介绍
-
-主要有`uart_send`、`uart_recv`应用程序
-
-`uart_send`：`EdgeBoard`通过串口，循环1s发送`00-09`的数据
-
-`uart_recv`：`EdgeBoard`通过串口，超时接收接收一个字节的数据
-
-### 准备工作
-
-1. 软件：软件：将`SmartCarToolKits`工程放到板子上的`/root/workspace/`文件夹下。
-
-2. 硬件：三根杜邦线，`TX`，`RX`，`GND`、1个`USB`转串口工具、`PC`电脑上安装串口调试助手
-
-
-
-`EdgeBoard`串口方形的为`TX`，圆形为`RX`
-
-![TXRX](./image/8.jpg)
-
-
-
-![串口通讯连接方式](./image/9.jpg)
-
-
-
-![串口通讯连接原理](./image/10.png)
-
-注意：有的`USB`转串口的`TX`与`RX`标识是转换后的，不需要交叉。
-
-
-
-### 编译方式
-
-```sh
-cd /root/workspace/SmartCarToolKits/c++
-mkdir build
-cd build
-cmake .. 
-make uart_send -j
-make uart_recv -j
-```
-
-会在`build`目录下产生`uart_send`、`uart_recv`的可执行文件
-
-### 使用方式
-
-同`USB`转`UART`章节
-
-### 问题排查的方法
-
-1. 查看硬件是否连接良好。
-
-2. 串口`TX`、`RX`是否反接
-
-3. 查看设备节点是否存在：`ls /dev/ttyPS1`

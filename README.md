@@ -431,7 +431,7 @@ make usb_uart_recv -j
 
 `EdgeBoard`串口方形的为`TX`，圆形为`RX`
 
-![28833d3b0cd026e4eeec0a745b7ee6d5](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/28833d3b0cd026e4eeec0a745b7ee6d5.png)
+![6fe4ccfe237ae7718f24471a3729d766](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/6fe4ccfe237ae7718f24471a3729d766.jpg)
 
 
 

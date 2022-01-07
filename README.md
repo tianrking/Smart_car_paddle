@@ -242,7 +242,7 @@ make predict -j
 
 ## SmartCarToolKits/python
 
-进入到`SmartCarToolKits/python`文件夹中
+进入到`SmartCarToolKits/python`文件夹中，python相关功能属于非必须功能，用户选择性参考即可
 
 ```
 cd /root/workspace/SmartCarToolKits/python/

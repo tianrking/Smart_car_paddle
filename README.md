@@ -15,11 +15,11 @@
 
 #### 功能介绍：
 
-将采集到的图片，转换成灰度视频
+将摄像头实时采集到的结果，转换成灰度视频。通过ctrl+c暂停。程序执行时间不宜过长。
 
 #### 准备工作：
 
-准备要转换的图片文件夹放到`/root/workspace/`路径下，以命名为`train`为例（可任意命名）。
+将摄像头插入EdgeBoard中。
 
 #### 编译方法：
 
@@ -35,15 +35,15 @@ make camera2video -j
 
 #### 使用方式：
 
-在build目录下执行 `./camera2video 图片文件夹的路径`
+在build目录下执行 `./camera2video`
 
 ```sh
-./camera2video /root/workspace/train/
+./camera2video 
 ```
 
 #### 产生效果：
 
-会在`build`目录下得到由`train`中图片组成的灰度的`camera.avi`文件
+会在`build`目录下得到一个灰度的`camera.avi`视频文件。
 
 
 

@@ -312,3 +312,249 @@ python3  collect.py
 
 
 
+# 串口通信
+
+将`SmartCarToolKits`工程放到板子上的`/root/workspace/`文件夹下。
+
+串口或者网口进入Edgeboard中linux系统。（具体详见`EdgeBoard 可视化访问的方法说明`手册）
+
+概述
+
+## USB转串口
+
+### 依赖的源文件
+
+`usb_uart_send.cpp`
+
+`usb_uart_recv.cpp`
+
+### 功能介绍
+
+主要有`usb_uart_send`、`usb_uart_recv`应用程序
+
+`usb_uart_send`：`EdgeBoard`通过`usb`转串口，循环1ms发送`00-09`的数据
+
+`usb_uart_recv`：`EdgeBoard`通过`usb`转串口，阻塞固定的时间接收一个字节的数据
+
+### 准备工作
+
+所需要的物品：三根杜邦线：`TX`，`RX`，`GND`、2个`USB`转串口工具、`PC`电脑上安装串口调试助手、`PC`安装相应适配的`USB`转串口驱动。
+
+**附连接示意图：**
+
+![d27ba35bcfc13066cb1eeff90c81ed8a](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/d27ba35bcfc13066cb1eeff90c81ed8a.png)
+
+
+
+由于一些`USB`转串口商家考虑到人们使用习惯，在`USB`转串口设备的串口标识出做出修改，连接方式为`TX`与`TX`相连，`RX`与`RX`相连。
+
+但是串口协议规定为下图交叉相连方式。具体连接视情况而定。
+
+![6d7dcee70ff1e72750e85781a7bb940f](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/6d7dcee70ff1e72750e85781a7bb940f.png)
+
+### 编译方式
+
+```sh
+cd /root/workspace/SmartCarToolKits/c++
+mkdir build
+cd build
+cmake .. 
+make usb_uart_send -j
+make usb_uart_recv -j
+```
+
+会在`build`目录下产生`usb_uart_send`、`usb_uart_recv`的应用程序
+
+### 使用方式
+
+按照准备工作中的连接示意图连接好之后。
+
+打开`PC`上的串口调试助手，`PC`端选择插入的`USB`转串口识别的串口号，并在串口调试助手中设置。
+
+`PC`上串口调试助手中设置16进制显示。
+
+`usb_uart_send.cpp`、`usb_uart_recv`程序中设置的，波特率为115200，8位数据位，无校验位。PC上串口调试助手需要相应的设置。
+
+附`PC`上串口调试助手设置图。
+
+![ebca75c60dac4d124ca22f60f573cbd2](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/ebca75c60dac4d124ca22f60f573cbd2.png)
+
+在`EdgeBoard`上linux中执行
+
+```sh
+cd /root/workspace/SmartCarToolKits/c++
+mkdir build
+cd build
+./usb_uart_send
+```
+
+或者
+
+在`PC`上串口调试助手，发送区设置循环数据，以`0x56`为例
+
+在`EdgeBoard`上linux中执行
+
+```sh
+cd /root/workspace/SmartCarToolKits/c++
+mkdir build
+cd build
+./usb_uart_recv
+```
+
+
+
+### 产生的效果
+
+在`EdgeBoard`上linux中执行`./usb_uart_send`结果：
+
+此时查看`PC`上的串口调试助手，会发现接收区出现，`EdgeBoard`发过来的数据，十六进制显示为`00-09`。
+
+![ae2d0cf728070971e8aebeaa017969fc](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/ae2d0cf728070971e8aebeaa017969fc.png)
+
+在`EdgeBoard`上`linux`中执行`./usb_uart_recv`结果：
+
+此时在`EdgeBoard`上`linux`终端，会接收到`PC`上的串口调试助手发过来的数据`0x56`。
+
+![7cee403c5a5508cb66b21bd689245556](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/7cee403c5a5508cb66b21bd689245556.png)
+
+### 问题排查方法
+
+`EdgeBoard` 目前支持的`USB`转串口的 控制器 也写上 `CH340` 和 `CP210x`
+
+1、查看硬件是否连接良好。
+
+2、`lsmod`：显示已载入系统的模块。
+
+执行 `lsmod` 命令，对比刚开机或者重启后执行`lsmod`与插上`USB`转串口，系统模块的差异
+
+接入`usb`转串口后执行`lsmod`，有可能是`CH340`与`CP210x`其中任何一个。
+
+![279e800b6136d84eff137733e0ab8d38](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/279e800b6136d84eff137733e0ab8d38.png)
+
+3、第一步： lsusb 查看是否有新设备 。证明 USB设备是否被识别了。
+
+![dee252f246a7aee82c8081b8a7297c70](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/dee252f246a7aee82c8081b8a7297c70.png)
+
+4、查看设备`USB`设备节点：`ls` `/dev/tty.xxx`  证明 
+
+![1213781d29bf9e4b6987f9d5eb163b89](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/1213781d29bf9e4b6987f9d5eb163b89.png)
+
+
+
+
+
+
+
+## 串口通信
+
+### 依赖的源文件
+
+`uart_send.cpp`
+
+`uart_recv.cpp`
+
+### 功能介绍
+
+主要有`uart_send`、`uart_recv`应用程序
+
+`uart_send`：`EdgeBoard`通过`usb`转串口，循环1ms发送`00-09`的数据
+
+`uart_recv`：`EdgeBoard`通过`usb`转串口，阻塞固定的时间接收一个字节的数据
+
+### 准备工作
+
+所需要的物品：三根杜邦线，`TX`，`RX`，`GND`、1个`USB`转串口工具、`PC`电脑上安装串口调试助手、`PC`上安装相应适配的`USB`转串口驱动。
+
+**附连接示意图：**
+
+`EdgeBoard`串口方形的为`TX`，圆形为`RX`
+
+![image2021-12-24_19-26-37](/Users/v_yangxiaohu/Desktop/image2021-12-24_19-26-37.png)
+
+![fa3a4b475f55efd9ec202ba84ea9e642](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/fa3a4b475f55efd9ec202ba84ea9e642.jpg)
+
+
+
+由于一些`USB`转串口商家考虑到人们使用习惯，在`USB`转串口设备的串口标识出做出修改，连接方式为`TX`与`TX`相连，`RX`与`RX`相连。
+
+但是串口协议规定为下图交叉相连方式。具体连接视情况而定。
+
+![9fd6a24147da46fc5c6e5be50f501557](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/9fd6a24147da46fc5c6e5be50f501557.png)
+
+
+
+
+
+### 编译方式
+
+```sh
+cd /root/workspace/SmartCarToolKits/c++
+mkdir build
+cd build
+cmake .. 
+make uart_send -j
+make uart_recv -j
+```
+
+会在`build`目录下产生`uart_send`、`uart_recv`的应用程序
+
+### 使用方式
+
+按照准备工作中的连接示意图连接好之后。
+
+打开`PC`上的串口调试助手，`PC`端选择插入的`USB`转串口识别的串口号，并在串口调试助手中设置。
+
+`PC`上串口调试助手中设置16进制显示。
+
+`uart_send.cpp`、`uart_recv`程序中设置的，波特率为115200，8位数据位，无校验位。`PC`上串口调试助手需要相应的设置。
+
+附`PC`上串口调试助手设置图。
+
+![ebca75c60dac4d124ca22f60f573cbd2](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/ebca75c60dac4d124ca22f60f573cbd2.png)
+
+在`EdgeBoard`上linux中执行
+
+```sh
+cd /root/workspace/SmartCarToolKits/c++
+mkdir build
+cd build
+./uart_send
+```
+
+或者
+
+在`PC`上串口调试助手，发送区设置循环数据，以`0x56`为例
+
+在`EdgeBoard`上linux中执行
+
+```sh
+cd /root/workspace/SmartCarToolKits/c++
+mkdir build
+cd build
+./uart_recv
+```
+
+
+
+### 产生的效果
+
+在`EdgeBoard`上linux中执行`./uart_send`结果：
+
+此时查看`PC`上的串口调试助手，会发现接收区出现，`EdgeBoard`发过来的数据，十六进制显示为`00-09`。
+
+![760b668d0fb603110898403cd593a346](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/760b668d0fb603110898403cd593a346.png)
+
+
+
+在`EdgeBoard`上`linux`中执行`./uart_recv`结果：
+
+此时在`EdgeBoard`上`linux`终端，会接收到`PC`上的串口调试助手发过来的数据`0x56`。
+
+![80f51e54dfdb43cac13cbb396a729d28](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/80f51e54dfdb43cac13cbb396a729d28.png)
+
+### 问题排查的方法
+
+1、查看硬件是否连接良好。
+
+2、串口`TX`、`RX`是否反接
+

@@ -336,14 +336,13 @@ python3  collect.py
 
 1. 软件：将`SmartCarToolKits`工程放到板子上的`/root/workspace/`文件夹下。
 2. 硬件：三根杜邦线：`TX`，`RX`，`GND`、2个`USB`转串口工具、`PC`电脑上安装串口调试助手。
-
-![d27ba35bcfc13066cb1eeff90c81ed8a](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/d27ba35bcfc13066cb1eeff90c81ed8a.png)
+![USB转UART连接方式](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/0.png)
 
 
 
 串口协议规定为下图交叉相连方式。
 
-![2ad36bb74bf820a657fb077a77dc41a5](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/2ad36bb74bf820a657fb077a77dc41a5.png)
+![USB转串口原理图](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/1.png)
 
 注意：有的`USB`转串口的`TX`与`RX`标识是转换后的，不需要交叉。
 
@@ -365,7 +364,7 @@ make usb_uart_recv -j
 1. 按照准备工作中的连接示意图连接，`PC`安装相应适配的`USB`转串口驱动。
 2. 打开`PC`上的串口调试助手，选择串口号，并在串口调试助手中设置:波特率为115200，8位数据位，无校验位。
 
-![ebca75c60dac4d124ca22f60f573cbd2](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/ebca75c60dac4d124ca22f60f573cbd2.png)
+![串口调试助手](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/2.png)
 
 3. 发送实验：`EdgeBoard`发送，`PC`机接收
 
@@ -373,7 +372,7 @@ make usb_uart_recv -j
 
    `PC`串口调试助手：查看接收结果：接收区出现，`EdgeBoard`发过来的数据，十六进制显示为`00-09`。
 
-   ![ae2d0cf728070971e8aebeaa017969fc](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/ae2d0cf728070971e8aebeaa017969fc.png)
+   ![接收区](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/3.png)
 
 4. 接收实验：`EdgeBoard`接收，`PC`机发送
 
@@ -381,7 +380,7 @@ make usb_uart_recv -j
 
    `EdgeBoard`:执行`./usb_uart_recv`程序。
 
-![7cee403c5a5508cb66b21bd689245556](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/7cee403c5a5508cb66b21bd689245556.png)
+![USB——linux接收](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/4.png)
 
 ### 问题排查方法
 
@@ -391,15 +390,15 @@ make usb_uart_recv -j
 
 2.  `lsusb` 查看是否有新设备 :证明 `USB`设备已经被识别了。
 
-![dee252f246a7aee82c8081b8a7297c70](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/dee252f246a7aee82c8081b8a7297c70.png)
+![lsusb](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/5.png)
 
 3. 执行 `lsmod` 命令，查看驱动是否被加载：
 
-![279e800b6136d84eff137733e0ab8d38](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/279e800b6136d84eff137733e0ab8d38.png)
+![lsmod](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/6.png)
 
 4. 查看`USB`转串口的设备节点：`ls` `/dev/tty.USB*`  
 
-![1213781d29bf9e4b6987f9d5eb163b89](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/1213781d29bf9e4b6987f9d5eb163b89.png)
+![查看设备文件节点](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/7.png)
 
 
 
@@ -431,15 +430,15 @@ make usb_uart_recv -j
 
 `EdgeBoard`串口方形的为`TX`，圆形为`RX`
 
-![6fe4ccfe237ae7718f24471a3729d766](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/6fe4ccfe237ae7718f24471a3729d766.jpg)
+![TXRX](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/8.jpg)
 
 
 
-![fa3a4b475f55efd9ec202ba84ea9e642](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/fa3a4b475f55efd9ec202ba84ea9e642.jpg)
+![串口通讯连接方式](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/9.jpg)
 
 
 
-![1691a99256303db7896fc46bcc330775](/Users/v_yangxiaohu/Library/Caches/BaiduMacHi/Share/images/1691a99256303db7896fc46bcc330775.png)
+![串口通讯连接原理](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/10.png)
 
 注意：有的`USB`转串口的`TX`与`RX`标识是转换后的，不需要交叉。
 

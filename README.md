@@ -140,7 +140,7 @@ make rgb_mat2gray_array -j
 
 #### 依赖的源文件：
 
-`SmartCarToolKits/c++/demo`中：`predict.cpp.cpp`
+`SmartCarToolKits/c++/demo`中：`predict.cpp`
 
 #### 功能介绍：
 
@@ -227,7 +227,7 @@ make predict -j
 在`build`目录下执行 `./predict 模型所在文件夹的路径`
 
 ```sh
-./rgb_mat2gray_array /root/workspace/SmartCarToolKits/mobilenet-ssd/
+./predict /root/workspace/SmartCarToolKits/mobilenet-ssd/
 ```
 
 #### 产生效果：
@@ -419,7 +419,7 @@ python3  capture.py
 
 由于`Edgeboard`资源限制。需要用到`USB`扩展口。将`USB`扩展口插入到`Edgeboard`上。摄像头与手柄在扩展口上插上即可。
 
-关于适配的`USB`扩展口与摄像头，手柄的购买链接，已经同步出来了。（具体详见`EdgeBoard 可视化访问的方法说明`）
+关于适配的`USB`扩展口与摄像头详见`EdgeBoard 可视化访问的方法说明`
 
 #### 使用方式
 
@@ -442,7 +442,7 @@ python3  collect.py
 
 会在当前文件夹生成一个`train`文件夹。
 
-`train`文件夹中包含，执行`python3  collect.py`后采集的图片序列，以及一个json文件。
+`train`文件夹中包含，执行`python3 collect.py`后采集的图片序列，以及一个json文件。
 
 
 

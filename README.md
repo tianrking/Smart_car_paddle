@@ -249,8 +249,6 @@ make predict -j
 
 ##### 功能介绍
 
-主要有`usb_uart_send`、`usb_uart_recv`应用程序
-
 `usb_uart_send`：`EdgeBoard`通过`usb`转串口，循环1s发送`00-09`的数据
 
 `usb_uart_recv`：`EdgeBoard`通过`usb`转串口，超时接收一个字节的数据
@@ -258,7 +256,7 @@ make predict -j
 ##### 准备工作
 
 1. 软件：将`SmartCarToolKits`工程放到板子上的`/root/workspace/`文件夹下。
-2. 硬件：三根杜邦线：`TX`，`RX`，`GND`、2个`USB`转串口工具、`PC`电脑上安装串口调试助手。
+2. 硬件：三根杜邦线(`TX`，`RX`，`GND`)、2个`USB`转串口工具、`PC`电脑上安装串口调试助手。
 ![USB转UART连接方式](./image/0.png)
 
 
@@ -280,28 +278,26 @@ make usb_uart_send -j
 make usb_uart_recv -j
 ```
 
-会在`build`目录下产生`usb_uart_send`、`usb_uart_recv`两个可执行文件
-
 ##### 使用方式
 
-1. 按照准备工作中的连接示意图连接，`PC`安装相应适配的`USB`转串口驱动。
-2. 打开`PC`上的串口调试助手，选择串口号，并在串口调试助手中设置:波特率为115200，8位数据位，无校验位。
+1. 按照准备工作中的连接示意图连接并且保证 电脑安装了对应的`USB`转串口驱动。
+2. 打开电脑上的串口调试助手，选择串口号，并在串口调试助手中设置:波特率为115200，8位数据位，无校验位。
 
 ![串口调试助手](./image/2.png)
 
-3. 发送实验：`EdgeBoard`发送，`PC`机接收
+3. 发送实验：`EdgeBoard`发送，电脑接收
 
    `EdgeBoard`:执行`./usb_uart_send`程序
 
-   `PC`串口调试助手：查看接收结果：接收区出现，`EdgeBoard`发过来的数据，十六进制显示为`00-09`。
+   电脑串口调试助手：查看接收结果，接收区会显示`EdgeBoard`发过来的数据，十六进制显示为`00-09`。
 
    ![接收区](./image/3.png)
 
-4. 接收实验：`EdgeBoard`接收，`PC`机发送
+4. 接收实验：`EdgeBoard`接收，电脑发送
 
-   `PC`串口调试助手：发送十六进制数据。以`0x56`为例
+   电脑串口调试助手：发送十六进制数据。以`0x56`为例
 
-   `EdgeBoard`:执行`./usb_uart_recv`程序。
+   `EdgeBoard`:执行`./usb_uart_recv`程序，显示如下结果
 
 ![USB——linux接收](./image/4.png)
 
@@ -323,10 +319,6 @@ make usb_uart_recv -j
 
 ![查看设备文件节点](./image/7.png)
 
-
-
-
-
 #### UART
 
 ##### 依赖的源文件
@@ -347,15 +339,7 @@ make usb_uart_recv -j
 
 1. 软件：软件：将`SmartCarToolKits`工程放到板子上的`/root/workspace/`文件夹下。
 
-2. 硬件：三根杜邦线，`TX`，`RX`，`GND`、1个`USB`转串口工具、`PC`电脑上安装串口调试助手
-
-
-
-`EdgeBoard`串口方形的为`TX`，圆形为`RX`
-
-![TXRX](./image/8.jpg)
-
-
+2. 硬件：三根杜邦线（`TX`，`RX`，`GND`）、1个`USB`转串口工具、电脑上安装串口调试助手
 
 ![串口通讯连接方式](./image/9.jpg)
 
@@ -365,7 +349,7 @@ make usb_uart_recv -j
 
 注意：有的`USB`转串口的`TX`与`RX`标识是转换后的，不需要交叉。
 
-
+![TXRX](./image/8.png)
 
 ##### 编译方式
 
@@ -378,8 +362,6 @@ make uart_send -j
 make uart_recv -j
 ```
 
-会在`build`目录下产生`uart_send`、`uart_recv`的可执行文件
-
 ##### 使用方式
 
 同`USB`转`UART`章节
@@ -391,10 +373,6 @@ make uart_recv -j
 2. 串口`TX`、`RX`是否反接
 
 3. 查看设备节点是否存在：`ls /dev/ttyPS1`
-
-
-
-
 
 ## python
 

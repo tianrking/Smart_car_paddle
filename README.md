@@ -336,13 +336,13 @@ python3  collect.py
 
 1. 软件：将`SmartCarToolKits`工程放到板子上的`/root/workspace/`文件夹下。
 2. 硬件：三根杜邦线：`TX`，`RX`，`GND`、2个`USB`转串口工具、`PC`电脑上安装串口调试助手。
-![USB转UART连接方式](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/0.png)
+![USB转UART连接方式](../image/0.png)
 
 
 
 串口协议规定为下图交叉相连方式。
 
-![USB转串口原理图](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/1.png)
+![USB转串口原理图](./image/1.png)
 
 注意：有的`USB`转串口的`TX`与`RX`标识是转换后的，不需要交叉。
 
@@ -364,7 +364,7 @@ make usb_uart_recv -j
 1. 按照准备工作中的连接示意图连接，`PC`安装相应适配的`USB`转串口驱动。
 2. 打开`PC`上的串口调试助手，选择串口号，并在串口调试助手中设置:波特率为115200，8位数据位，无校验位。
 
-![串口调试助手](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/2.png)
+![串口调试助手](./image/2.png)
 
 3. 发送实验：`EdgeBoard`发送，`PC`机接收
 
@@ -372,7 +372,7 @@ make usb_uart_recv -j
 
    `PC`串口调试助手：查看接收结果：接收区出现，`EdgeBoard`发过来的数据，十六进制显示为`00-09`。
 
-   ![接收区](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/3.png)
+   ![接收区](./image/3.png)
 
 4. 接收实验：`EdgeBoard`接收，`PC`机发送
 
@@ -380,7 +380,7 @@ make usb_uart_recv -j
 
    `EdgeBoard`:执行`./usb_uart_recv`程序。
 
-![USB——linux接收](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/4.png)
+![USB——linux接收](./image/4.png)
 
 ### 问题排查方法
 
@@ -390,15 +390,15 @@ make usb_uart_recv -j
 
 2.  `lsusb` 查看是否有新设备 :证明 `USB`设备已经被识别了。
 
-![lsusb](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/5.png)
+![lsusb](./image/5.png)
 
 3. 执行 `lsmod` 命令，查看驱动是否被加载：
 
-![lsmod](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/6.png)
+![lsmod](./image/6.png)
 
 4. 查看`USB`转串口的设备节点：`ls` `/dev/tty.USB*`  
 
-![查看设备文件节点](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/7.png)
+![查看设备文件节点](./image/7.png)
 
 
 
@@ -430,15 +430,15 @@ make usb_uart_recv -j
 
 `EdgeBoard`串口方形的为`TX`，圆形为`RX`
 
-![TXRX](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/8.jpg)
+![TXRX](./image/8.jpg)
 
 
 
-![串口通讯连接方式](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/9.jpg)
+![串口通讯连接方式](./image/9.jpg)
 
 
 
-![串口通讯连接原理](https://github.com/chengruichang/SmartCarToolKits/blob/main/image/10.png)
+![串口通讯连接原理](./image/10.png)
 
 注意：有的`USB`转串口的`TX`与`RX`标识是转换后的，不需要交叉。
 

@@ -10,13 +10,12 @@ using namespace cv;
 
 int main(int argc, char *argv[]) {
 
-  VideoCapture capture(0); // Open input
+  VideoCapture capture(0);
   if (!capture.isOpened()) {
     cout << "Could not open the input video: " << endl;
     return -1;
   }
-  // capture.set(CAP_PROP_FRAME_WIDTH, 640);
-  // capture.set(CAP_PROP_FRAME_HEIGHT, 480);
+
 
   double rate = capture.get(CAP_PROP_FPS);
   double width = capture.get(CAP_PROP_FRAME_WIDTH);
@@ -25,10 +24,10 @@ int main(int argc, char *argv[]) {
             << " height = " << height << std::endl;
 
   const string NAME = "camera.avi";
-  VideoWriter outputVideo; // Open the output
+  VideoWriter outputVideo;
   outputVideo.open(
       NAME, VideoWriter::fourcc('M', 'J', 'P', 'G'), capture.get(CAP_PROP_FPS),
-      Size((int)capture.get(CAP_PROP_FRAME_WIDTH), // Acquire input size
+      Size((int)capture.get(CAP_PROP_FRAME_WIDTH),
            (int)capture.get(CAP_PROP_FRAME_HEIGHT)),
       false);
 

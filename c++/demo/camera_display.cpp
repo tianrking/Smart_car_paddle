@@ -9,7 +9,7 @@ using namespace std;
 using namespace cv;
 
 int main(int argc, char *argv[]) {
-  //std::string video_device = "/dev/video0";
+
   
   /*注意：
     使用 0 和 /dev/video0 的分辨率不同：
@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 
   std::string window_name = "usbcamera";
   namedWindow(window_name, WINDOW_NORMAL);
-  //setWindowProperty(window_name, WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
+
 
   int width_ = 640;
   int height_ = 480;
@@ -41,9 +41,7 @@ int main(int argc, char *argv[]) {
       std::cout << "no video frame" << std::endl;
       continue;
     }
-    
-    // Mat displayMat;
-    // resize(frame, displayMat, Size(width_, height_));
+
 
     imshow(window_name, frame);
     waitKey(1);

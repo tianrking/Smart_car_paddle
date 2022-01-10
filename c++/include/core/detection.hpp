@@ -12,9 +12,9 @@
 #include "core/frame_save.hpp"
 
 struct DetectionResult {
-  cv::Mat det_render_frame;
-  cv::Mat rgb_frame;
-  std::vector<PredictResult> predictor_results;
+  cv::Mat det_render_frame; // 画了框的图
+  cv::Mat rgb_frame;        // 原图
+  std::vector<PredictResult> predictor_results; // 预测结果
 };
 // 对检测模型的封装类，通过一个单独线程完成从摄像头读图，到模型推理
 class Detection {
@@ -90,11 +90,7 @@ public:
           _lastResult = result;
           cond_.notify_all();
         }
-        /*
-        std::cout << "Detecdtion Capture need[" << capture_times
-                  << "]ms ,Deall All Need [" << stop_watch_capture.toc()
-                  << "]ms" << std::endl;
-        */
+
       }
     });
   }
@@ -105,10 +101,11 @@ public:
     std::shared_ptr<DetectionResult> ret = nullptr;
     {
       std::unique_lock<std::mutex> lock(_mutex);
-
+      // 临界区内，等待预测线程的结果，等待条件变量
       while (_lastResult == nullptr) {
         cond_.wait(lock);
       }
+      // 拿到当前最新结果帧，返回
       ret = _lastResult;
       _lastResult = nullptr;
     }

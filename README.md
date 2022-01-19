@@ -3,7 +3,7 @@
 将SmartCarToolKits工程放到/root/workspace/下
 
 
-串口或者网口进入Edgeboard中linux系统。（具体详见`EdgeBoard 可视化访问的方法说明`手册）
+串口或者网口进入Edgeboard中linux系统。（具体详见`FZ3B可视化访问的方法说明`手册）
 
 ## c++
 
@@ -65,7 +65,7 @@ make camera2video -j
 
 将摄像头插入`EdgeBoard`上的`USB`口中。
 
-连接好显示器，或者通过vnc显示（具体详见`EdgeBoard 可视化访问的方法说明`手册）
+连接好显示器，或者通过vnc显示（具体详见`FZ3B可视化访问的方法说明`手册）
 
 
 #### 编译方法：
@@ -156,7 +156,7 @@ make rgb_mat2gray_array -j
 
 将摄像头插入`EdgeBoard`上的`USB`口中。
 
-连接好显示器，打开VNC。（具体详见`EdgeBoard 可视化访问的方法说明`手册）
+连接好显示器，打开VNC。（具体详见`FZ3B可视化访问的方法说明`手册）
 
 将准备含有模型的文件夹放到`/root/workspace/`路径下，以命名为`mobilenet-ssd`为例（可任意命名）。
 
@@ -419,7 +419,7 @@ python3  capture.py
 
 由于`Edgeboard`资源限制。需要用到`USB`扩展口。将`USB`扩展口插入到`Edgeboard`上。摄像头与手柄在扩展口上插上即可。
 
-关于适配的`USB`扩展口与摄像头详见`EdgeBoard 可视化访问的方法说明`
+关于适配的`USB`扩展口与摄像头详见`图像采集与WiFi使用说明`
 
 #### 使用方式
 

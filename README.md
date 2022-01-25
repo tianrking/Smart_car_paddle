@@ -369,10 +369,165 @@ make uart_recv -j
 ##### 问题排查的方法
 
 1. 查看硬件是否连接良好。
-
 2. 串口`TX`、`RX`是否反接
-
 3. 查看设备节点是否存在：`ls /dev/ttyPS1`
+
+
+
+### RS485通信
+
+#### 依赖的源文件：
+
+`rs485_send.cpp`
+
+`rs485_recv.cpp`
+
+#### 功能介绍
+
+`rs485_send`：`EdgeBoard`通过`485`接口，间隔1s发送`0x56`的数据
+
+`rs485_recv`：`EdgeBoard`通过`485`接口，超时5000ms接收，接收一个字节的数据
+
+#### 准备工作
+
+1. 软件：将`SmartCarToolKits`工程放到板子上的`/root/workspace/`文件夹下。
+2. 硬件：两根杜邦线、1个USB转RS-485转换器、`PC`电脑上安装串口调试助手。
+
+![12](./image/12.png)
+
+![17](./image/17.png)
+
+RS485协议规定为下图连接方式。
+
+![13](./image/13.png)
+
+
+
+#### 编译方式
+
+```sh
+cd /root/workspace/SmartCarToolKits/c++
+mkdir build
+cd build
+cmake .. 
+make rs485_send -j
+make rs485_recv -j
+```
+
+
+
+#### 使用方式
+
+1. 按照准备工作中的连接示意图连接并且保证 电脑安装了对应的`USB`转`RS485`转换器对应的驱动。
+2. 打开电脑上的串口调试助手，选择串口号，并在串口调试助手中设置:波特率为115200，8位数据位，无校验位。
+
+![2](./image/2.png)
+
+
+
+3. 发送实验：`EdgeBoard`发送，电脑接收
+
+`EdgeBoard`:执行`./rs485_send `程序
+
+电脑串口调试助手：查看接收结果，接收区会显示`EdgeBoard`发过来的数据，十六进制显示为`56`。
+
+![14](./image/14.png)
+
+
+
+4. 接收实验：`EdgeBoard`接收，电脑发送
+
+电脑串口调试助手：发送十六进制数据。以`0xAA`为例
+
+`EdgeBoard`:执行`./rs485_recv `程序，显示如下结果
+
+![15](./image/15.png)
+
+
+
+#### 问题排查的方法
+
+1. 查看硬件是否连接良好。
+2. `485_A`与`485_B`不需要反接。
+3. 查看设备节点是否存在：`ls /dev/ttyS2`、`ls /dev/gpiochip0`
+
+
+
+### GPIO
+
+`EdgeBoard`已经预留出6个GPIO口，预留的GPIO接口在44针扩展口上，电平标准为3.3V。
+
+![20](./image/20.png)
+
+| 硬件管脚 | 软件参数 |
+| -------- | -------- |
+| Pin9     | 82       |
+| Pin10    | 83       |
+| Pin11    | 84       |
+| Pin12    | 85       |
+| Pin13    | 86       |
+| Pin14    | 87       |
+
+
+
+#### 依赖的源文件：
+
+`gpioDemo.cpp`
+
+#### 功能介绍
+
+`gpioDemo`：GPIO输出电平，间隔1s翻转。
+
+#### 准备工作
+
+1. 软件：将`SmartCarToolKits`工程放到板子上的`/root/workspace/`文件夹下。
+2. 硬件：三根杜邦线，一个电阻，一个发光二极管。
+
+![18](./image/18.png)
+
+连接方式如下图所示。
+
+![19](./image/19.png)
+
+#### 编译方式
+
+```sh
+cd /root/workspace/SmartCarToolKits/c++
+mkdir build
+cd build
+cmake .. 
+make gpioDemo -j
+```
+
+#### 使用方式
+
+以硬件管脚`Pin9`为例：
+
+1. `EdgeBoard`:执行`./gpioDemo  82`程序。（如果使用不同的GPIO口，改变相应软件参数即可）
+
+2. 观察发光二极管：间隔1s 闪烁。
+
+   ![18](/Users/v_yangxiaohu/Desktop/工作/小车/小车485通信demo/485-gpio/image/18.png)
+
+
+
+#### 问题排查的方法
+
+1. 查看硬件是否连接良好。
+2. 查看引脚号使用是否正确。
+3. 查看设备节点是否存在：`ls /dev/gpiochip0`
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## python
 

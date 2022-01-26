@@ -244,11 +244,11 @@ make predict -j
 
 1. 软件：将 `SmartCarToolKits`工程放到板子上的 `/root/workspace/`文件夹下。
 2. 硬件：三根杜邦线(`TX`，`RX`，`GND`)、2个 `USB`转串口工具、`PC`电脑上安装串口调试助手。
-   ![USB转UART连接方式](./image/0.png)
+              <img src="./image/0.png" alt="USB转UART连接方式" style="zoom: 67%;" />
 
 串口协议规定为下图交叉相连方式。
 
-![USB转串口原理图](./image/1.png)
+<img src="./image/1.png" alt="USB转串口原理图" style="zoom:50%;" />
 
 注意：有的 `USB`转串口的 `TX`与 `RX`标识是转换后的，不需要交叉。
 
@@ -268,7 +268,7 @@ make usb_uart_recv -j
 1. 按照准备工作中的连接示意图连接并且保证 电脑安装了对应的 `USB`转串口驱动。
 2. 打开电脑上的串口调试助手，选择串口号，并在串口调试助手中设置:波特率为115200，8位数据位，无校验位。
 
-![串口调试助手](./image/2.png)
+<img src="./image/2.png" alt="串口调试助手" style="zoom: 64%;" />
 
 3. 发送实验：`EdgeBoard`发送，电脑接收
 
@@ -276,14 +276,14 @@ make usb_uart_recv -j
 
    电脑串口调试助手：查看接收结果，接收区会显示 `EdgeBoard`发过来的数据，十六进制显示为 `00-09`。
 
-   ![接收区](./image/3.png)
+   <img src="./image/3.png" alt="接收区" style="zoom: 33%;" />
 4. 接收实验：`EdgeBoard`接收，电脑发送
 
    电脑串口调试助手：发送十六进制数据。以 `0x56`为例
 
    `EdgeBoard`:执行 `./usb_uart_recv`程序，显示如下结果
 
-![USB——linux接收](./image/4.png)
+<img src="./image/4.png" alt="USB——linux接收" style="zoom: 45%;" />
 
 ##### 问题排查方法
 
@@ -292,15 +292,15 @@ make usb_uart_recv -j
 1. 查看硬件是否连接良好。
 2. `lsusb` 查看是否有新设备 :证明 `USB`设备已经被识别了。
 
-![lsusb](./image/5.png)
+<img src="./image/5.png" alt="lsusb" style="zoom:33%;" />
 
 3. 执行 `lsmod` 命令，查看驱动是否被加载：
 
-![lsmod](./image/6.png)
+<img src="./image/6.png" alt="lsmod" style="zoom:33%;" />
 
 4. 查看 `USB`转串口的设备节点：`ls` `/dev/tty.USB*`
 
-![查看设备文件节点](./image/7.png)
+<img src="./image/7.png" alt="查看设备文件节点" style="zoom: 33%;" />
 
 #### UART
 
@@ -323,13 +323,13 @@ make usb_uart_recv -j
 1. 软件：软件：将 `SmartCarToolKits`工程放到板子上的 `/root/workspace/`文件夹下。
 2. 硬件：三根杜邦线（`TX`，`RX`，`GND`）、1个 `USB`转串口工具、电脑上安装串口调试助手
 
-![串口通讯连接方式](./image/9.jpg)
+<img src="./image/9.jpg" alt="串口通讯连接方式" style="zoom: 47%;" />
 
-![串口通讯连接原理](./image/10.png)
+<img src="./image/10.png" alt="串口通讯连接原理" style="zoom: 50%;" />
 
 注意：有的 `USB`转串口的 `TX`与 `RX`标识是转换后的，不需要交叉。
 
-![TXRX](./image/8.png)
+<img src="./image/8.png" alt="TXRX" style="zoom: 25%;" />
 
 ##### 编译方式
 

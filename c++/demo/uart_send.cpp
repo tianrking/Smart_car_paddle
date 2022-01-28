@@ -23,8 +23,9 @@ int main(int argc, char *argv[]) {
         //循环发送数据0-9，然后延时1s重新发送
         for (size_t i = 0; i < 10; i++){
             driver->senddata(i);
+            sleep(1);//linux下，sleep里的单位s，延时1s发一次
+
         }
-        sleep(1);//linux下，sleep里的单位s，延时1s发一次
     }
 
     return 0;

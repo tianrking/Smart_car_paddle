@@ -8,10 +8,14 @@ using namespace std;
 int main(int argc, char *argv[]) {  
     int ret = 0;
     unsigned int count = 0;
-    //与下文接收一个字节的数据并打印相关
     size_t timeout_ms = 5000;//阻塞时间5000ms。
     uint8_t recv_data;   //存放接收到的数据
-
+    /*
+        1. "/dev/ttyS2"            : RS485 的设备节点
+        2. BaudRate::BAUD_115200   : RS485 的波特率
+        3. "/dev/gpiochip0"        : RS485 EN 对应的GPIO的 设备节点
+        4. 81                      : RS485 EN 对应的GPIO的 number (同 GPIO Readme 中提到的软件参数)
+    */
     std::shared_ptr<RS485> rs485 = std::make_shared<RS485>(
         "/dev/ttyS2", BaudRate::BAUD_115200, "/dev/gpiochip0", 81);
     if (rs485 == nullptr) {
@@ -34,7 +38,7 @@ int main(int argc, char *argv[]) {
                         <<" , and has been received "<< dec << count << std::endl;
         }        
     }
-
+    rs485->stop();
     return 0;
 
 }

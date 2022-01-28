@@ -45,6 +45,7 @@ int main(int argc, char *argv[]){
         gpiod_line_set_value(_gpio_line, 0);    
         sleep(1);
     }
+    gpiod_chip_close(_gpio_chip);
     
     return 0;
 }

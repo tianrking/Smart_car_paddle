@@ -49,24 +49,9 @@ int main()
     capture.set(CV_CAP_PROP_FRAME_HEIGHT, height_);
 
     Mat frame;
-    // while (1) {
-    // 	if (!capture.read(frame)) {
-    // 	std::cout << "no video frame" << std::endl;
-    // 	continue;
-    // 	}
 
-    // Mat src = imread("/media/root/Data/Desktop/Smart_car_paddle-main/image/22.png");
-
-    // if (!src.data) {
-    // 	printf("could not find");
-    // 	return -1;
-    // }
     namedWindow("frame", CV_WINDOW_NORMAL);
     namedWindow(outputtitle, WINDOW_AUTOSIZE);
-    // imshow("demo", src);
-
-    // cvtColor(src, gray_src, COLOR_BGR2GRAY);
-    //转换为灰度图
 
     while (1)
     {
@@ -82,43 +67,91 @@ int main()
 
         imshow("frame", src);
 
-        ////////////////////////////
-		Mat draw_line_block_img = src.clone();
-        int image_shape_width = src.rows; // x
-        int image_shape_height = src.cols; //y
-		
-		cout << image_shape_height << image_shape_width << src.size()<<endl;
-		int image_shape_height_step = image_shape_height/4; 
-		int image_shape_width_step = image_shape_width/4; 
+        //////////////////////////// DRAW LINE BEGIN
+        Mat draw_line_block_img = src.clone();
+        int image_shape_width = src.rows;  // x
+        int image_shape_height = src.cols; // y
 
-        int avail[10][10];
-        int y_points[] = {image_shape_height_step, image_shape_height_step*2, image_shape_height_step*3}; 
-        int y_points_len = sizeof(y_points)/sizeof(y_points[0]);
+        cout << image_shape_height << image_shape_width << src.size() << endl;
+        int image_shape_height_step = image_shape_height / 4;
+        int image_shape_width_step = image_shape_width / 4;
+
+        // int L_edge[image_shape_width],R_edge[image_shape_width]; /// EDGE LINE BEGIN
+
+        int y_points[] = {image_shape_height_step, image_shape_height_step * 2, image_shape_height_step * 3};
+        int y_points_len = sizeof(y_points) / sizeof(y_points[0]);
 
         for (int ky = 0; ky < y_points_len; ky++)
         {
             for (int i = 0; i < image_shape_width; i++)
             {
-				circle(draw_line_block_img, Point(y_points[ky],i), 2, (0, 255, 100));
-				
+                circle(draw_line_block_img, Point(y_points[ky], i), 2, (0, 255, 100));
             }
         }
 
-		int x_points[] = {image_shape_width_step, image_shape_width_step*2, image_shape_width_step*3}; 
-        int x_points_len = sizeof(x_points)/sizeof(x_points[0]);
+        int x_points[] = {image_shape_width_step, image_shape_width_step * 2, image_shape_width_step * 3};
+        int x_points_len = sizeof(x_points) / sizeof(x_points[0]);
 
-		for (int i = 0; i < image_shape_height; i++)
+        for (int i = 0; i < image_shape_height; i++)
         {
             for (int ky = 0; ky < y_points_len; ky++)
             {
-				circle(draw_line_block_img, Point(i,y_points[ky]), 2, (0, 255, 100));
-				
+                circle(draw_line_block_img, Point(i, y_points[ky]), 2, (0, 255, 100));
             }
         }
 
+        // imshow("draw_line_block_img", draw_line_block_img);
+
+        //////////////////////////// DRAW LINE END
+
+        //////////////////////////// EDGE LINE BEGIN
+
+		Mat draw_line_block_img_LINE_BLOCK = src.clone();
+        int L_edge[image_shape_width]; int L_edge_index=0;
+		int R_edge[image_shape_width]; int R_edge_index=0;
+
+
+ 		for (int _x = 1; _x < image_shape_width; _x++)
+    	{
+        
+			for (int _y = 0; _y < image_shape_height ; _y++)
+			{
+				if (((int)draw_line_block_img_LINE_BLOCK.at<uchar>(_y, _x) == 255))
+				{
+					
+					if(((int)draw_line_block_img_LINE_BLOCK.at<uchar>(_y, _x+1) == 0))
+					{
+						circle(draw_line_block_img,Point(_x,_y), 10, (51, 255, 20));
+						L_edge[L_edge_index] = _y;
+						L_edge_index++;
+					}
+				}
+
+				if (((int)draw_line_block_img_LINE_BLOCK.at<uchar>(_y, _x) == 0))
+				{
+					if(((int)draw_line_block_img_LINE_BLOCK.at<uchar>(_y, _x+1) == 255))
+					{
+						circle(draw_line_block_img,Point(_x,_y), 10, (51, 255, 20));
+						R_edge[R_edge_index] = _y;
+						R_edge_index++;
+					}
+				}
+			}   
+    	}
+		L_edge_index = 0 ;
+		R_edge_index = 0 ;
+		// for (int _x = 0; _x < image_shape_width; _x++)
+		// {
+		// 	for(int i = 0;i < image_shape_height ;i++)
+		// 	{
+		// 		int mid_point = (L_edge[i]+R_edge[i])/2;
+		// 		circle(draw_line_block_img,Point(_x,mid_point), 10, (51, 255, 20));
+		// 	}
+		// }
+
 		imshow("draw_line_block_img", draw_line_block_img);
-		
-        ////////////////////////////
+
+        //////////////////////////// EDGE LINE END
 
         if (waitKey(100) == 'W')
             break;

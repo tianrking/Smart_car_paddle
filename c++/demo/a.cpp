@@ -1,0 +1,194 @@
+#include <fstream>
+#include <iostream>
+#include <stdio.h>
+#include <opencv2/highgui.hpp>
+#include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
+#include <math.h>
+#include <opencv2/imgproc/imgproc.hpp>
+// #include <iostream>
+#include <string>
+
+using namespace cv;
+Mat src, gray_src, dst;
+int t1_val = 302;
+int t1_max = 500;
+int i = 0;
+int t2_val = 480;
+int t2_max = 500;
+int j = 0;
+int PI = 3.14159;
+const char *outputtitle = "result image";
+void Canny_Demo1(int, void *){};
+Mat Canny_Demo(Mat, int, int);
+void detect(Mat edge_output_1);
+CvScalar s;
+
+using std::cout;
+using std::endl;
+
+int main()
+{
+
+    VideoCapture capture(0);
+    if (!capture.isOpened())
+    {
+        std::cout << "can not open video device " << std::endl;
+        return 1;
+    }
+
+    // double rate = capture.get(CAP_PROP_FPS);
+    double width = capture.get(CAP_PROP_FRAME_WIDTH);
+    double height = capture.get(CAP_PROP_FRAME_HEIGHT);
+
+    int width_ = 640;
+    int height_ = 480;
+
+    capture.set(CV_CAP_PROP_FRAME_WIDTH, width_); //
+
+    capture.set(CV_CAP_PROP_FRAME_HEIGHT, height_);
+
+    Mat frame;
+    // while (1) {
+    // 	if (!capture.read(frame)) {
+    // 	std::cout << "no video frame" << std::endl;
+    // 	continue;
+    // 	}
+
+    // Mat src = imread("/media/root/Data/Desktop/Smart_car_paddle-main/image/22.png");
+
+    // if (!src.data) {
+    // 	printf("could not find");
+    // 	return -1;
+    // }
+    namedWindow("frame", CV_WINDOW_NORMAL);
+    namedWindow(outputtitle, WINDOW_AUTOSIZE);
+    // imshow("demo", src);
+
+    // cvtColor(src, gray_src, COLOR_BGR2GRAY);
+    //转换为灰度图
+
+    while (1)
+    {
+
+        if (!capture.read(frame))
+        {
+            std::cout << "error";
+            continue;
+        }
+
+        cvtColor(frame, gray_src, COLOR_BGR2GRAY);
+        threshold(gray_src, src, 0, 255, THRESH_BINARY | THRESH_OTSU);
+
+        imshow("frame", src);
+
+        ////////////////////////////
+		Mat draw_line_block_img = src.clone();
+        int image_shape_width = src.rows; // x
+        int image_shape_height = src.cols; //y
+		
+		cout << image_shape_height << image_shape_width << src.size()<<endl;
+		int image_shape_height_step = image_shape_height/4; 
+		int image_shape_width_step = image_shape_width/4; 
+
+        int avail[10][10];
+        int y_points[] = {image_shape_height_step, image_shape_height_step*2, image_shape_height_step*3}; 
+        int y_points_len = sizeof(y_points)/sizeof(y_points[0]);
+
+        for (int ky = 0; ky < y_points_len; ky++)
+        {
+            for (int i = 0; i < image_shape_width; i++)
+            {
+				circle(draw_line_block_img, Point(y_points[ky],i), 2, (0, 255, 100));
+				
+            }
+        }
+
+		int x_points[] = {image_shape_width_step, image_shape_width_step*2, image_shape_width_step*3}; 
+        int x_points_len = sizeof(x_points)/sizeof(x_points[0]);
+
+		for (int i = 0; i < image_shape_height; i++)
+        {
+            for (int ky = 0; ky < y_points_len; ky++)
+            {
+				circle(draw_line_block_img, Point(i,y_points[ky]), 2, (0, 255, 100));
+				
+            }
+        }
+
+		imshow("draw_line_block_img", draw_line_block_img);
+		
+        ////////////////////////////
+
+        if (waitKey(100) == 'W')
+            break;
+        // // std::cout<<"A";
+    }
+    // Canny_Demo(0, 0);
+    // waitKey(0);
+    return 0;
+}
+Mat Canny_Demo(Mat src1, int t1_val, int t2_val)
+{
+    // Mat edge_output = src1.clone();
+    Mat src;
+    cvtColor(src1, src, COLOR_BGR2GRAY);
+    Mat element;
+    element = getStructuringElement(MORPH_RECT, Size(3, 3));
+    erode(src, src, element);
+    // std::cout<<t1_val<<" "<<t2_val<<std::endl;
+    // blur(src1, src1, Size(3, 3), Point(-1, -1), BORDER_DEFAULT);
+    Canny(src, src, t1_val, t2_val, 3, false);
+    // std::cout<<t1_val<<" "<<t2_val<<std::endl;
+    // imwrite("blur.jpg", edge_output);
+
+    // dst.create(src.size(), src.type());
+    //将图像的边缘显示，是彩色的边缘。像素为1的时候，将原像素的值copy到上。
+    // src.copyTo(dst, edge_output);
+    //  imshow("Canny", src);
+    //  detect(edge_output);
+    //  std::cout<<" Canny    "<<src.cols<<" "<<src.rows <<std::endl;
+
+    return src;
+}
+
+void detect(Mat edge_output)
+{
+    namedWindow("circle", WINDOW_AUTOSIZE);
+    Mat edge_output_draw = edge_output.clone();
+    int avail[10][10];
+    int y_points[] = {680, 620, 580, 520, 440};
+    int y_points_len = sizeof(y_points) / sizeof(int);
+    for (int i = 1; i < 560; i++)
+    {
+        // break;
+        for (int ky = 0; ky < y_points_len; ky++)
+        {
+            if (((int)edge_output.at<uchar>(y_points[ky], i) == 255))
+            {
+                avail[ky][j] = i;
+                j++;
+                if (j == 2)
+                {
+                    j = 0;
+                }
+                // std::cout<<i<<"\n";
+                // std::cout<<y_points[ky];
+                circle(edge_output_draw, Point(i, y_points[ky]), 10, (0, 255, 100));
+
+                // std::cout<<(avail[2][0]+avail[2][1])/2<<" "<<(avail[0][0]+avail[0][1])/2<<std::endl;
+            }
+        }
+        // std::cout<<endl;
+    }
+    double a = atan2((avail[2][0] + avail[2][1]) / 2 - (avail[0][0] + avail[0][1]) / 2, 100);
+    std::cout << a * 180 / PI << " ";
+    // std::cout<<(avail[2][0]+avail[2][1])/2<<" "<<(avail[0][0]+avail[0][1])/2<<std::endl;/
+    cv::Point start1 = cv::Point((avail[0][0] + avail[0][1]) / 2, 680);
+    cv::Point end1 = cv::Point((avail[2][0] + avail[2][1]) / 2, 580);
+    cv::arrowedLine(edge_output_draw, start1, end1, cv::Scalar(255, 255, 0), 4, 8, 0);
+    cv::Point start2 = cv::Point((avail[2][0] + avail[2][1]) / 2, 580);
+    cv::Point end2 = cv::Point((avail[4][0] + avail[4][1]) / 2, 440);
+    cv::arrowedLine(edge_output_draw, start2, end2, cv::Scalar(255, 255, 0), 4, 8, 0);
+    imshow("circle", edge_output_draw);
+}

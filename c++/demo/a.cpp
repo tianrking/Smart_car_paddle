@@ -63,6 +63,8 @@ int main()
         }
 
         cvtColor(frame, gray_src, COLOR_BGR2GRAY);
+
+		Mat draw_line_block_img_gbr = frame.clone();
         threshold(gray_src, src, 0, 255, THRESH_BINARY | THRESH_OTSU);
 
         imshow("frame", src);
@@ -85,7 +87,7 @@ int main()
         {
             for (int i = 0; i < image_shape_width; i++)
             {
-                circle(draw_line_block_img, Point(y_points[ky], i), 2, (0, 255, 100));
+                circle(draw_line_block_img_gbr, Point(y_points[ky], i), 2, (0, 255, 100));
             }
         }
 
@@ -96,7 +98,7 @@ int main()
         {
             for (int ky = 0; ky < y_points_len; ky++)
             {
-                circle(draw_line_block_img, Point(i, y_points[ky]), 2, (0, 255, 100));
+                circle(draw_line_block_img_gbr, Point(i, y_points[ky]), 2, (0, 255, 100));
             }
         }
 
@@ -121,9 +123,9 @@ int main()
 					
 					if(((int)draw_line_block_img_LINE_BLOCK.at<uchar>(_y, _x+1) == 0))
 					{
-						circle(draw_line_block_img,Point(_x,_y), 10, (51, 255, 20));
+						circle(draw_line_block_img_gbr,Point(_x,_y), 3, (14,152,20));
 						L_edge[L_edge_index] = _y;
-						L_edge_index++;
+						// L_edge_index++;
 					}
 				}
 
@@ -131,9 +133,9 @@ int main()
 				{
 					if(((int)draw_line_block_img_LINE_BLOCK.at<uchar>(_y, _x+1) == 255))
 					{
-						circle(draw_line_block_img,Point(_x,_y), 10, (51, 255, 20));
+						circle(draw_line_block_img_gbr,Point(_x,_y), 3, (14, 152, 20));
 						R_edge[R_edge_index] = _y;
-						R_edge_index++;
+						// R_edge_index++;
 					}
 				}
 			}   
@@ -149,7 +151,7 @@ int main()
 		// 	}
 		// }
 
-		imshow("draw_line_block_img", draw_line_block_img);
+		imshow("draw_line_block_img", draw_line_block_img_gbr);
 
         //////////////////////////// EDGE LINE END
 

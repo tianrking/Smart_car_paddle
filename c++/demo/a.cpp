@@ -1,3 +1,5 @@
+#include "core/uart_test.hpp"
+#include <unistd.h>
 #include <fstream>
 #include <iostream>
 #include <stdio.h>
@@ -8,6 +10,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 // #include <iostream>
 #include <string>
+#include <sstream>
 
 using namespace cv;
 Mat src, gray_src, dst;
@@ -26,9 +29,22 @@ void detect(Mat edge_output_1);
 
 using std::cout;
 using std::endl;
+using std::string;
+std::shared_ptr<Driver> driver = nullptr;
 
 int main()
 {
+    driver = std::make_shared<Driver>("/dev/ttyUSB0", BaudRate::BAUD_115200);
+    if (driver == nullptr) {
+        std::cout << "Create Driver Error ." << std::endl;
+        return -1;
+    }
+    //串口初始化，打开串口设备及配置串口数据格式
+    int ret = driver->open();
+    if (ret != 0){
+        std::cout << "Driver Open failed ." << std::endl;
+        return -1;
+    }
 
     VideoCapture capture(0);
     if (!capture.isOpened())
@@ -52,15 +68,21 @@ int main()
 
     namedWindow("frame", CV_WINDOW_NORMAL);
     namedWindow(outputtitle, WINDOW_AUTOSIZE);
+    double t;
+    double fps;
 
     while (1)
     {
-
+        t = (double)cv::getTickCount();
         if (!capture.read(frame))
         {
             std::cout << "error";
             continue;
         }
+
+        t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+		fps = 1.0 / t ;
+		cout<< fps <<endl;
 
         cvtColor(frame, gray_src, COLOR_BGR2GRAY);
 
@@ -76,7 +98,7 @@ int main()
         int image_shape_width_mid = image_shape_width/2;
         int image_shape_height_mid = image_shape_height/2;
 
-        cout << image_shape_height << image_shape_width << src.size() << endl;
+        // cout << image_shape_height << image_shape_width << src.size() << endl;
         int image_shape_height_step = image_shape_height / 4;
         int image_shape_width_step = image_shape_width / 4;
 
@@ -119,36 +141,6 @@ int main()
         int L_edge[image_shape_width]; int L_edge_index=0;
 		int R_edge[image_shape_width]; int R_edge_index=0;
 
-    /////////////////////////////LR BLOCK BEGIN /////
- 		// for (int _x = 1; _x < image_shape_width; _x++)
-    	// {
-        
-		// 	for (int _y = 0; _y < image_shape_height ; _y++)
-		// 	{
-		// 		if (((int)draw_line_block_img_LINE_BLOCK.at<uchar>(_y, _x) == 255))
-		// 		{
-					
-		// 			if(((int)draw_line_block_img_LINE_BLOCK.at<uchar>(_y, _x+1) == 0))
-		// 			{
-		// 				circle(draw_line_block_img_gbr,Point(_x,_y), 3, (14,152,20));
-		// 				L_edge[L_edge_index] = _y;
-		// 				// L_edge_index++;
-		// 			}
-		// 		}
-
-		// 		if (((int)draw_line_block_img_LINE_BLOCK.at<uchar>(_y, _x) == 0))
-		// 		{
-		// 			if(((int)draw_line_block_img_LINE_BLOCK.at<uchar>(_y, _x+1) == 255))
-		// 			{
-		// 				circle(draw_line_block_img_gbr,Point(_x,_y), 3, (14, 152, 20));
-		// 				R_edge[R_edge_index] = _y;
-		// 				// R_edge_index++;
-		// 			}
-		// 		}
-		// 	}   
-    	// }
-
-    /////////////////////////////////////////////LR BLOCK END /////
 		L_edge_index = 0 ;
 		R_edge_index = 0 ;
 
@@ -190,21 +182,39 @@ int main()
             _flag_block_R_Line = 1;
         }
 
-        
-        
-
 		for (int _y = 0; _y < image_shape_width; _y++)
 		{
             int mid_point = (L_edge[_y]+R_edge[_y])/2;
             // circle(draw_line_block_img,Point(mid_point,_y), 20, (51, 40, 20));
-            circle(draw_line_block_img_gbr,Point(mid_point,_y), 4, (10, 20, 80));
+            circle(draw_line_block_img_gbr,Point(mid_point,_y), 4, (14, 245, 20));
 
 		}
+
+        int _LINE_return = image_shape_width - 40 ;
+        int error = image_shape_height_mid-(L_edge[_LINE_return]+R_edge[_LINE_return])/2;
+
+        circle(draw_line_block_img_gbr,Point(image_shape_height_mid,_LINE_return), 20, (14, 164, 65));
+        circle(draw_line_block_img_gbr,Point((L_edge[_LINE_return]+R_edge[_LINE_return])/2,_LINE_return), 20, (14, 164, 65));
+        
+        int font_face = cv::FONT_HERSHEY_COMPLEX;
+        double font_scale = 2;
+        int thickness = 2;
+
+        cv::Point origin;
+        origin.x = 50;
+        origin.y = 100;
+    
+        string disp = std::to_string(error);
+
+        // size_t
+        driver->senddata((size_t)error);
+        // sleep(1);//linux下，sleep里的单位s，延时1s发一次
+
+        cv::putText(draw_line_block_img_gbr, disp ,origin, font_face, font_scale, cv::Scalar(0, 255, 255), thickness, 8, 0);
 
 		imshow("draw_line_block_img", draw_line_block_img_gbr);
 
         //////////////////////////// EDGE LINE END
-
         if (waitKey(100) == 'W')
             break;
         // // std::cout<<"A";

@@ -60,6 +60,16 @@ target_link_libraries(${GPIO_PROJECT_NAME} PRIVATE ${OpenCV_LIBS})
 target_link_libraries(${GPIO_PROJECT_NAME} PRIVATE serial)
 target_link_libraries(${GPIO_PROJECT_NAME} PRIVATE gpiod)
 
+
+set(GPIO_PROJECT_NAME "c")
+set(GPIO_PROJECT_SOURCES ${PROJECT_SOURCE_DIR}/demo/c.cpp)
+link_directories("/usr/lib/aarch64-linux-gnu/")
+add_executable(${GPIO_PROJECT_NAME} ${GPIO_PROJECT_SOURCES})
+target_link_libraries(${GPIO_PROJECT_NAME} PRIVATE pthread )
+target_link_libraries(${GPIO_PROJECT_NAME} PRIVATE ${OpenCV_LIBS})
+target_link_libraries(${GPIO_PROJECT_NAME} PRIVATE serial)
+target_link_libraries(${GPIO_PROJECT_NAME} PRIVATE gpiod)
+
 set(GPIO_PROJECT_NAME "save")
 set(GPIO_PROJECT_SOURCES ${PROJECT_SOURCE_DIR}/demo/save.cpp)
 link_directories("/usr/lib/aarch64-linux-gnu/")

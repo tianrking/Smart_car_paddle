@@ -50,16 +50,17 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/camera_display.dir/DependInfo.cmake"
   "CMakeFiles/save.dir/DependInfo.cmake"
   "CMakeFiles/usb_uart_send.dir/DependInfo.cmake"
+  "CMakeFiles/c.dir/DependInfo.cmake"
+  "CMakeFiles/b.dir/DependInfo.cmake"
+  "CMakeFiles/a.dir/DependInfo.cmake"
   "CMakeFiles/camera2video.dir/DependInfo.cmake"
   "CMakeFiles/Chy_0.dir/DependInfo.cmake"
   "CMakeFiles/predict.dir/DependInfo.cmake"
   "CMakeFiles/uart_recv.dir/DependInfo.cmake"
   "CMakeFiles/rs485_recv.dir/DependInfo.cmake"
-  "CMakeFiles/b.dir/DependInfo.cmake"
-  "CMakeFiles/a.dir/DependInfo.cmake"
+  "CMakeFiles/camera_display.dir/DependInfo.cmake"
   "CMakeFiles/usb_device_test.dir/DependInfo.cmake"
   "CMakeFiles/rgb_mat2gray_array.dir/DependInfo.cmake"
   "CMakeFiles/uart_send.dir/DependInfo.cmake"

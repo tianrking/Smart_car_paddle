@@ -111,19 +111,6 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named camera_display
-
-# Build rule for target.
-camera_display: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 camera_display
-.PHONY : camera_display
-
-# fast build rule for target.
-camera_display/fast:
-	$(MAKE) -f CMakeFiles/camera_display.dir/build.make CMakeFiles/camera_display.dir/build
-.PHONY : camera_display/fast
-
-#=============================================================================
 # Target rules for targets named save
 
 # Build rule for target.
@@ -148,6 +135,45 @@ usb_uart_send: cmake_check_build_system
 usb_uart_send/fast:
 	$(MAKE) -f CMakeFiles/usb_uart_send.dir/build.make CMakeFiles/usb_uart_send.dir/build
 .PHONY : usb_uart_send/fast
+
+#=============================================================================
+# Target rules for targets named c
+
+# Build rule for target.
+c : cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 c
+.PHONY : c
+
+# fast build rule for target.
+c/fast:
+	$(MAKE) -f CMakeFiles/c.dir/build.make CMakeFiles/c.dir/build
+.PHONY : c/fast
+
+#=============================================================================
+# Target rules for targets named b
+
+# Build rule for target.
+b : cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 b
+.PHONY : b
+
+# fast build rule for target.
+b/fast:
+	$(MAKE) -f CMakeFiles/b.dir/build.make CMakeFiles/b.dir/build
+.PHONY : b/fast
+
+#=============================================================================
+# Target rules for targets named a
+
+# Build rule for target.
+a : cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 a
+.PHONY : a
+
+# fast build rule for target.
+a/fast:
+	$(MAKE) -f CMakeFiles/a.dir/build.make CMakeFiles/a.dir/build
+.PHONY : a/fast
 
 #=============================================================================
 # Target rules for targets named camera2video
@@ -215,30 +241,17 @@ rs485_recv/fast:
 .PHONY : rs485_recv/fast
 
 #=============================================================================
-# Target rules for targets named b
+# Target rules for targets named camera_display
 
 # Build rule for target.
-b : cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 b
-.PHONY : b
+camera_display: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 camera_display
+.PHONY : camera_display
 
 # fast build rule for target.
-b/fast:
-	$(MAKE) -f CMakeFiles/b.dir/build.make CMakeFiles/b.dir/build
-.PHONY : b/fast
-
-#=============================================================================
-# Target rules for targets named a
-
-# Build rule for target.
-a : cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 a
-.PHONY : a
-
-# fast build rule for target.
-a/fast:
-	$(MAKE) -f CMakeFiles/a.dir/build.make CMakeFiles/a.dir/build
-.PHONY : a/fast
+camera_display/fast:
+	$(MAKE) -f CMakeFiles/camera_display.dir/build.make CMakeFiles/camera_display.dir/build
+.PHONY : camera_display/fast
 
 #=============================================================================
 # Target rules for targets named usb_device_test
@@ -398,6 +411,33 @@ demo/b.s: demo/b.cpp.s
 demo/b.cpp.s:
 	$(MAKE) -f CMakeFiles/b.dir/build.make CMakeFiles/b.dir/demo/b.cpp.s
 .PHONY : demo/b.cpp.s
+
+demo/c.o: demo/c.cpp.o
+
+.PHONY : demo/c.o
+
+# target to build an object file
+demo/c.cpp.o:
+	$(MAKE) -f CMakeFiles/c.dir/build.make CMakeFiles/c.dir/demo/c.cpp.o
+.PHONY : demo/c.cpp.o
+
+demo/c.i: demo/c.cpp.i
+
+.PHONY : demo/c.i
+
+# target to preprocess a source file
+demo/c.cpp.i:
+	$(MAKE) -f CMakeFiles/c.dir/build.make CMakeFiles/c.dir/demo/c.cpp.i
+.PHONY : demo/c.cpp.i
+
+demo/c.s: demo/c.cpp.s
+
+.PHONY : demo/c.s
+
+# target to generate assembly for a file
+demo/c.cpp.s:
+	$(MAKE) -f CMakeFiles/c.dir/build.make CMakeFiles/c.dir/demo/c.cpp.s
+.PHONY : demo/c.cpp.s
 
 demo/camera2video.o: demo/camera2video.cpp.o
 
@@ -757,16 +797,17 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... camera_display"
 	@echo "... save"
 	@echo "... usb_uart_send"
+	@echo "... c"
+	@echo "... b"
+	@echo "... a"
 	@echo "... camera2video"
 	@echo "... Chy_0"
 	@echo "... predict"
 	@echo "... uart_recv"
 	@echo "... rs485_recv"
-	@echo "... b"
-	@echo "... a"
+	@echo "... camera_display"
 	@echo "... usb_device_test"
 	@echo "... rgb_mat2gray_array"
 	@echo "... uart_send"
@@ -783,6 +824,9 @@ help:
 	@echo "... demo/b.o"
 	@echo "... demo/b.i"
 	@echo "... demo/b.s"
+	@echo "... demo/c.o"
+	@echo "... demo/c.i"
+	@echo "... demo/c.s"
 	@echo "... demo/camera2video.o"
 	@echo "... demo/camera2video.i"
 	@echo "... demo/camera2video.s"

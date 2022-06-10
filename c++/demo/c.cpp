@@ -262,4 +262,5 @@ cvtColor(frame, gray_src, COLOR_BGR2GRAY);
     waitKey(1);
   }
   capture.release();
+  
 }

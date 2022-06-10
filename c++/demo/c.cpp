@@ -30,15 +30,18 @@ void Canny_Demo1(int, void *){};
 Mat Canny_Demo(Mat, int, int);
 void detect(Mat edge_output_1);
 
-
 using std::cout;
 using std::endl;
 using std::string;
 std::shared_ptr<Driver> driver = nullptr;
+int main(int argc, char *argv[]) {
 
-int main(int argc,char *argv[])
-{
-    driver = std::make_shared<Driver>("/dev/ttyUSB0", BaudRate::BAUD_115200);
+  /*注意：
+    使用 0 和 /dev/video0 的分辨率不同：
+      0           : opencv 内部的采集，可能是基于 V4L2, 分辨率：1280 * 960
+      /dev/video0 : 基于Gstreamer ， 分辨率：640 * 480
+  */
+   driver = std::make_shared<Driver>("/dev/ttyUSB0", BaudRate::BAUD_115200);
     if (driver == nullptr) {
         std::cout << "Create Driver Error ." << std::endl;
         return -1;
@@ -49,68 +52,42 @@ int main(int argc,char *argv[])
         std::cout << "Driver Open failed ." << std::endl;
         return -1;
     }
+  VideoCapture capture("/dev/video1");
+  if (!capture.isOpened()) {
+    std::cout << "can not open video device "  << std::endl;
+    return 1;
+  }
 
-    VideoCapture capture("/dev/video1");
-    if (!capture.isOpened())
-    {
-        std::cout << "can not open video device " << std::endl;
-        return 1;
-    }
+  capture.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
+  // double width = capture.get(CAP_PROP_FRAME_WIDTH);
+  // double height = capture.get(CAP_PROP_FRAME_HEIGHT);
+  capture.set(CV_CAP_PROP_FPS, 300);
+  capture.set(CV_CAP_PROP_FRAME_WIDTH,300);
+  capture.set(CV_CAP_PROP_FRAME_HEIGHT, 200);
+  std::string window_name = "usbcamera";
 
-    // double rate = capture.get(CAP_PROP_FPS);
-    // int width_ = capture.get(CAP_PROP_FRAME_WIDTH);
-    // int height_ = capture.get(CAP_PROP_FRAME_HEIGHT);
-    // int width_ = 420;
-    // int height_ = 360;
-
-  
-   // capture.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M','J','P','G'));
-    // capture.set(CV_CAP_PROP_FOURCC, CV_FOURCC('X','V','I','D'));
-    capture.set(CAP_PROP_FOURCC, VideoWriter::fourcc('M', 'J', 'P', 'G')) ;
-
-    // capture.set(CAP_PROP_FPS, 60);
-
-    // capture.set(CV_CAP_PROP_FPS, 30);
-    capture.set(CV_CAP_PROP_FPS, 300);
-
-    capture.set(CV_CAP_PROP_FRAME_WIDTH,160);//480
-
-    capture.set(CV_CAP_PROP_FRAME_HEIGHT, 120);//300
-    
-    // capture.set(CV_CAP_PROP_FRAME_WIDTH, width_); //
-    // capture.set(CV_CAP_PROP_FRAME_HEIGHT, height_);
-
+  namedWindow(window_name, WINDOW_NORMAL);
+  int width_ = 640;
+  int height_ = 480;
+  double fps=30;
+  double t;
     Mat frame;
-    namedWindow(outputtitle, CV_WINDOW_NORMAL);
-    double t;
-    double fps=300;
-
-    static int kk = 1;
-    if(argv[0]==0){
-        std::cout<<"aaaa"<<std::endl;
-        return 0;
+    //namedWindow(outputtitle, CV_WINDOW_NORMAL);
+  while (1) {
+    double rate = capture.get(CAP_PROP_FPS);
+    cout<< rate <<endl;
+    if (!capture.read(frame)) {
+      std::cout << "no video frame" << std::endl;
+      continue;
     }
-    while (1)
-    {
-        t = (double)cv::getTickCount();
-        if (!capture.read(frame))
-        {
-            std::cout << "error";
-            continue;
-        }
-
-        t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
-		fps = 1.0 / t ;
-		cout<< fps <<endl;
-
-        cvtColor(frame, gray_src, COLOR_BGR2GRAY);
+cvtColor(frame, gray_src, COLOR_BGR2GRAY);
 
 		Mat draw_line_block_img_gbr = frame.clone();
         threshold(gray_src, src, 0, 255, THRESH_BINARY | THRESH_OTSU);
 
         // imshow("frame", src);
 
-        //////////////////////////// DRAW LINE BEGIN
+        //////////////////////////// DRAW LINE BEGIN////////////////
         Mat draw_line_block_img = gray_src.clone();
         int image_shape_width = src.rows;  // y
         int image_shape_height = src.cols; // x 
@@ -139,8 +116,7 @@ int main(int argc,char *argv[])
         }
         // imshow("draw_line_block_img", draw_line_block_img);
 
-        //////////////////////////// DRAW LINE END
-
+        //////////////////////////// DRAW LINE END    
         //////////////////////////// EDGE LINE BEGIN
 
 		Mat draw_line_block_img_LINE_BLOCK = src.clone();
@@ -217,7 +193,7 @@ int main(int argc,char *argv[])
             _flag_block_L_Line = 1;
             _flag_block_R_Line = 1;
        }
-       /////////////////////////////////////////////////////////功能线////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////功能线////////////////////////////////////////////////////////////
         for(int i=0;i<image_shape_width;i++)
        {
            circle(draw_line_block_img_gbr,Point(image_shape_height/2,i), 1, (14, 245, 20));//屏幕中线
@@ -246,36 +222,7 @@ int main(int argc,char *argv[])
                 flag_lose=0;
             circle(draw_line_block_img_gbr,Point( M_edge[_y],_y), 1.5, (110, 245, 200));//中线
 		}
-        //////////////////////////////////各种标志位的处理////////////////////////////
-        // if(flag_lose==1)
-        // {   
-            // int kubian =0;
-            // for(int _y=image_shape_width *2/3;_y<image_shape_width;_y++)
-            // {
-            //     ////判断下半段为直线
-            //     if((L_edge[_y]-L_edge[_y+1]>=0)&&((R_edge[_y]-R_edge[_y+1])<=0)&&((R_edge[_y]-R_edge[_y+3])<0)&&(L_edge[_y]-L_edge[_y+5]>=1))
-            //     {
-            //         flag_ahead==1;
-            //         kubian=_y;
-            //         break;
-            //     }
-            //     if(flag_ahead==1)///////////////顶点附近直线为黑
-            //     if(((int)draw_line_block_img_LINE_BLOCK.at<uchar>(T_edge-2, image_shape_height/2+15) == 255)&&((int)draw_line_block_img_LINE_BLOCK.at<uchar>(T_edge-2, image_shape_height/2-15) == 255))
-            //         {
-            //             // flag_out1=1;
-            //             // for(int i=T_edge;i<=kubian;i++)
-            //             // {
-            //                 L_edge[_y]=(image_shape_height/2-L_edge[kubian]-40)/(kubian-T_edge)+L_edge[kubian];
-            //                 M_edge[_y]=(L_edge[_y]+image_shape_height)/2;
-            //                 circle(draw_line_block_img_gbr,Point(M_edge[_y],i), 4, (14, 245, 20));//中线
-            //                 circle(draw_line_block_img_gbr,Point(L_edge[_y],i), 10, (110, 12, 90));// 左边线
-            //             // }
-            //         }
-            //     else 
-            //         flag_out1=0;
-            // }
-        // }
-        ////////////////////////////////偏差处理/////////////////////////////////////
+         ////////////////////////////////偏差处理/////////////////////////////////////
         int _LINE_return = image_shape_width *3/4 ;
         int _LINE_return_1=image_shape_width *4/5 ;
         int _LINE_return_2=image_shape_width *5/6;
@@ -299,23 +246,20 @@ int main(int argc,char *argv[])
         
         int font_face = cv::FONT_HERSHEY_COMPLEX;
         double font_scale = 1;
-        int thickness = 2;
+        int thickness = 1;
 
         cv::Point origin;
         origin.x = 10;
         origin.y = 20;
         string disp = std::to_string(error);
-        ///////////////////////////////////////////////串口发送/////////////////////////////////////
+         ///////////////////////////////////////////////串口发送/////////////////////////////////////
                 driver->senddata(11);
                 driver->senddata((size_t)error);         
     cv::putText(draw_line_block_img_gbr, disp ,origin, font_face, font_scale, cv::Scalar(0, 255, 255), thickness, 8, 0);
     cv::namedWindow("draw_line_block_img", CV_WINDOW_NORMAL);//CV_WINDOW_NORMAL就是0
     cv::imshow("draw_line_block_img", draw_line_block_img_gbr);
-        //////////////////////////// EDGE LINE END//////////////////
-        if (waitKey(100) == 'W')
-            break;
-    }
-    capture.release();
-    
-    return 0;
+    imshow(window_name, frame);
+    waitKey(1);
+  }
+  capture.release();
 }

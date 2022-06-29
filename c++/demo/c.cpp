@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
         std::cout << "Driver Open failed ." << std::endl;
         return -1;
     }
-  VideoCapture capture("/dev/video1");
+  VideoCapture capture("/dev/video0");
   if (!capture.isOpened()) {
     std::cout << "can not open video device "  << std::endl;
     return 1;
@@ -73,6 +73,9 @@ int main(int argc, char *argv[]) {
   double t;
     Mat frame;
     //namedWindow(outputtitle, CV_WINDOW_NORMAL);
+
+
+
   while (1) {
     double rate = capture.get(CAP_PROP_FPS);
     cout<< rate <<endl;

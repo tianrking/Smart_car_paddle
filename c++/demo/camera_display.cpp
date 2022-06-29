@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
       0           : opencv 内部的采集，可能是基于 V4L2, 分辨率：1280 * 960
       /dev/video0 : 基于Gstreamer ， 分辨率：640 * 480
   */
-  VideoCapture capture("/dev/video1");
+  VideoCapture capture("/dev/video0");
   if (!capture.isOpened()) {
     std::cout << "can not open video device "  << std::endl;
     return 1;

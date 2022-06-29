@@ -11,6 +11,10 @@
 #include <string>
 #include <sstream>
 
+#include<memory>
+#include <unistd.h>
+#include <iomanip>
+
 using namespace cv;
 Mat src, gray_src, dst;
 int t1_val = 302;
@@ -21,28 +25,45 @@ int t2_max = 500;
 int j = 0;
 int PI = 3.14159;
 int endline;
+int state = 11;
 ///////各种flag///////////
 int flag_lose = 0; //无左右边线
+int flag_full = 0; //无左右边线
 int flag_out1;     //出库
 int flag_ahead;    //直线
 const char *outputtitle = "result image";
-void Canny_Demo1(int, void *){};
-Mat Canny_Demo(Mat, int, int);
-void detect(Mat edge_output_1);
 
 using std::cout;
 using std::endl;
 using std::string;
 std::shared_ptr<Driver> driver = nullptr;
+
+///////////参数
+float Turn_Kp=3.0;//3.0 3.0
+float Turn_Kd=2.8;//2.5 3.0
+
+float Turn_Pwm_Control(float error)
+{
+    static float T_out,Last_error;
+	T_out=error*Turn_Kp+Turn_Kd*(error-Last_error);
+	Last_error=error;
+	if(T_out>80)
+	{
+		T_out=80;
+	}
+	if(T_out<-90)
+	{
+		T_out=-90;
+	}
+	return T_out;
+}
+
+
 int main(int argc, char *argv[])
 {
 
-    /*注意：
-    使用 0 和 /dev/video0 的分辨率不同：
-    0           : opencv 内部的采集，可能是基于 V4L2, 分辨率：1280 * 960
-    /dev/video0 : 基于Gstreamer ， 分辨率：640 * 480
-    */
-    driver = std::make_shared<Driver>("/dev/ttyUSB0", BaudRate::BAUD_115200);
+    // driver = std::make_shared<Driver>("/dev/ttyUSB0", BaudRate::BAUD_115200);
+    driver = std::make_shared<Driver>("/dev/ttyPS1", BaudRate::BAUD_115200);
     if (driver == nullptr)
     {
         std::cout << "Create Driver Error ." << std::endl;
@@ -55,18 +76,20 @@ int main(int argc, char *argv[])
         std::cout << "Driver Open failed ." << std::endl;
         return -1;
     }
-    VideoCapture capture("/dev/video1");
+    VideoCapture capture("/dev/video0");
     if (!capture.isOpened())
     {
         std::cout << "can not open video device " << std::endl;
         return 1;
     }
 
+   
+
     capture.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
     // double width = capture.get(CAP_PROP_FRAME_WIDTH);
     // double height = capture.get(CAP_PROP_FRAME_HEIGHT);
     capture.set(CV_CAP_PROP_FPS, 300);
-    capture.set(CV_CAP_PROP_FRAME_WIDTH, 300);
+    capture.set(CV_CAP_PROP_FRAME_WIDTH, 300);//300 200
     capture.set(CV_CAP_PROP_FRAME_HEIGHT, 200);
     std::string window_name = "usbcamera";
 
@@ -122,8 +145,8 @@ int main(int argc, char *argv[])
         // imshow("draw_line_block_img", draw_line_block_img);
 
         //////////////////////////// DRAW LINE END
-        //////////////////////////// EDGE LINE BEGIN
 
+        //////////////////////////// EDGE LINE BEGIN
         Mat draw_line_block_img_LINE_BLOCK = src.clone();
         int L_edge[image_shape_width];
         int L_edge_index = 0;
@@ -134,6 +157,7 @@ int main(int argc, char *argv[])
         L_edge_index = 0;
         R_edge_index = 0;
         int endline;
+        int white_account = 0;
         int _flag_block_L_Line;
         int _flag_block_R_Line;
         // image_shape_heigh是高，image_shape_width是长
@@ -156,18 +180,18 @@ int main(int argc, char *argv[])
         {
             for (int _x = image_shape_height_mid / 2; _x <= image_shape_height; _x++)
             {
-                if (((int)draw_line_block_img_LINE_BLOCK.at<uchar>(_y, _x) == 255) && ((int)draw_line_block_img_LINE_BLOCK.at<uchar>(_y, _x - 1) == 255))
+                if (((int)draw_line_block_img_LINE_BLOCK.at<uchar>(_y, _x + 1) == 0))
                 {
-                    if (((int)draw_line_block_img_LINE_BLOCK.at<uchar>(_y, _x + 1) == 0))
+                    if (((int)draw_line_block_img_LINE_BLOCK.at<uchar>(_y, _x) == 255) && ((int)draw_line_block_img_LINE_BLOCK.at<uchar>(_y, _x - 1) == 255))
                     {
                         if (_flag_block_R_Line == 1)
                         {
-                            if (_x >= 635)
+                            if (_x >= image_shape_height-2)
                             {
-                                _x == 639;
+                                _x == image_shape_height;
                             }
-                            circle(draw_line_block_img_gbr, Point(_x, _y), 3, (110, 12, 90)); //右边线
-                            R_edge[_y] = _x;
+                            circle(draw_line_block_img_gbr, Point(_x+1, _y), 3, (110, 12, 90)); //右边线
+                            R_edge[_y] = _x+1;
                             _flag_block_R_Line = 0;
                             break;
                         }
@@ -183,9 +207,9 @@ int main(int argc, char *argv[])
                     {
                         if (_flag_block_L_Line == 1)
                         {
-                            if (_x <= 5)
+                            if (_x <= 2)
                             {
-                                _x == 1;
+                                _x == 0;
                             }
                             circle(draw_line_block_img_gbr, Point(_x, _y), 3, (110, 12, 90)); // 左边线
                             L_edge[_y] = _x;
@@ -198,6 +222,7 @@ int main(int argc, char *argv[])
             _flag_block_L_Line = 1;
             _flag_block_R_Line = 1;
         }
+        
         /////////////////////////////////////////////////////////功能线////////////////////////////////////////////////////////////
         for (int i = 0; i < image_shape_width; i++)
         {
@@ -213,40 +238,59 @@ int main(int argc, char *argv[])
             M_edge[_y] = (L_edge[_y] + R_edge[_y]) / 2;
             if ((M_edge[_y] <= image_shape_height / 5) || (M_edge[_y] >= image_shape_height * 4 / 5))
             {
-                // if(image_shape_width/6<=T_edge<=image_shape_width/2)//出库改中线
-                // {
-                //     M_edge[_y]=(L_edge[_y+image_shape_width/3]+image_shape_height*3/2)/2;
-                // }
-                // else
-                // {
-                M_edge[_y] = image_shape_height / 2; //两边空白时自动补中线为屏幕中线
-                                                     // flag_lose=1;
-                // }
+                if(flag_lose==0)
+                {
+                    M_edge[_y] = image_shape_height / 2; //两边空白时自动补中线为屏幕中线
+                    flag_lose=1;
+                }
             }
             else
                 flag_lose = 0;
             circle(draw_line_block_img_gbr, Point(M_edge[_y], _y), 1.5, (110, 245, 200)); //中线
         }
         ////////////////////////////////偏差处理/////////////////////////////////////
-        int _LINE_return = image_shape_width * 3 / 4;
-        int _LINE_return_1 = image_shape_width * 4 / 5;
-        int _LINE_return_2 = image_shape_width * 5 / 6;
+        int _LINE_return = image_shape_width *0.65;
+        int _LINE_return_1 = image_shape_width * 0.8;
+        int _LINE_return_2 = image_shape_width * 0.9;
 
         int error = image_shape_height_mid - M_edge[_LINE_return];
         int error_1 = image_shape_height_mid - M_edge[_LINE_return_1];
         int error_2 = image_shape_height_mid - M_edge[_LINE_return_2];
-        error = (1.0 * error + 1.1 * error_1 + 1.2 * error_2);
-        if ((60 > error > 40) || (-60 < error < -40))
+        error = (1.0 * error + 1.1 * error_1 + 1.1 * error_2)/3;
+        error=Turn_Pwm_Control(error);
+        if ((25 > error > 0) || (-20 < error < 0))
             error = 0.85 * error;
         else if ((error > 60) || (error < -60))
             error = 0.95 * error;
-        if (error > 80)
-            error = 80;
-        else if (error < -80)
-            error = -80;
+        ////////////////////
+        for(int _x = 0; _x <= image_shape_height; _x++)
+        {
+            if((int)draw_line_block_img_LINE_BLOCK.at<uchar>(image_shape_width/2, _x) == 255)
+            white_account++;
+
+        }
+        if(white_account>0.5*image_shape_height)
+            {
+                // flag_full=1;
+                state = 11;
+                white_account=0;
+            }
+            else if((white_account<0.1*image_shape_height)&&(-20<error<20))
+            {
+                state = 22;
+                white_account=0;
+            }
+
+
+
+
+
+
+
+
         circle(draw_line_block_img_gbr, Point(image_shape_height_mid, _LINE_return), 3, (255, 0, 0), 2);   //检测线
-        circle(draw_line_block_img_gbr, Point(image_shape_height_mid, _LINE_return_1), 3, (255, 0, 0), 2); //检测线
-        circle(draw_line_block_img_gbr, Point(image_shape_height_mid, _LINE_return_2), 3, (255, 0, 0), 2); //检测线
+        circle(draw_line_block_img_gbr, Point(image_shape_height_mid, _LINE_return_1), 3, (255, 0, 0), 2); 
+        circle(draw_line_block_img_gbr, Point(image_shape_height_mid, _LINE_return_2), 3, (255, 0, 0), 2); 
         circle(draw_line_block_img_gbr, Point((M_edge[_LINE_return]), _LINE_return), 3, (255, 0, 0), 2);
 
         int font_face = cv::FONT_HERSHEY_COMPLEX;
@@ -257,14 +301,32 @@ int main(int argc, char *argv[])
         origin.x = 10;
         origin.y = 20;
         string disp = std::to_string(error);
-        ///////////////////////////////////////////////串口发送/////////////////////////////////////
-        driver->senddata(11);
+
+        int speed = 0 ;
+        if((error>40)||(error<-40))
+        {
+            speed=speed-10;
+        }
+        else if(-20<=error<=20)
+        {
+            speed=speed+10;
+        }
+        // speed=speed>200?200:speed;
+        // speed=speed<-200?-200:speed;
+        
+        /////////////////////////////////////////////串口发送/////////////////////////////////////
+        driver->senddata(state);
         driver->senddata((size_t)error);
+        // driver->senddata((size_t)speed);
+        /////
         cv::putText(draw_line_block_img_gbr, disp, origin, font_face, font_scale, cv::Scalar(0, 255, 255), thickness, 8, 0);
         cv::namedWindow("draw_line_block_img", CV_WINDOW_NORMAL); // CV_WINDOW_NORMAL就是0
         cv::imshow("draw_line_block_img", draw_line_block_img_gbr);
         imshow(window_name, frame);
+        // if (waitKey(45) == 'W')
+        //     break;
         waitKey(1);
     }
     capture.release();
+    return 0;
 }

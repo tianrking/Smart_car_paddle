@@ -55,6 +55,12 @@ string
 -
 sstream
 -
+memory
+-
+unistd.h
+-
+iomanip
+-
 
 /usr/local/include/libserial/SerialPort.h
 libserial/SerialPortConstants.h
